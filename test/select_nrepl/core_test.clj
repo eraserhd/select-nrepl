@@ -43,5 +43,13 @@
 
 (deftest a-select-element
   (are [before after] (= (select :element before) after)
-    "<hello>" "<hello>"
-    "he<>llo" "<hello>"))
+    ;;    Input             Output
+    ;;--------------   -----------------
+    "<hello>"          "<hello>"
+    "  hello/<>world"  "  <hello/world>"
+    " :foo/ba<>r"      " <:foo/bar>"
+    " \\new<>line"     " <\\newline>"
+    " \"a s<t>ring\" " " <\"a string\"> "
+    " 4200<>0  x"      " <42000>  x"
+    "++ #\"<>x\" ;;-"  "++ <#\"x\"> ;;-"
+    " #fo<>o \"h\" "   " <#foo \"h\"> "))
