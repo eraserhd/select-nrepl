@@ -1,5 +1,6 @@
 (ns select-nrepl.core
   (:require
+   [rewrite-clj.node :as n]
    [rewrite-clj.zip :as z]))
 
 (defmulti select
@@ -37,8 +38,17 @@
   (when z
     [(start-position z) (end-position z)]))
 
+(defn- element?
+  [z]
+  (case (z/tag z)
+    :reader-macro   (= :token (-> z z/down z/right z/tag))
+    (:token :regex) true
+    false))
+
 (defmethod select :element
   [_ text start _]
   (-> (z/of-string text {:track-position? true})
-      (z/find-depth-first (partial inside? start))
+      (z/find-depth-first (fn [z]
+                            (and (inside? start z)
+                                 (element? z))))
       this-node))
