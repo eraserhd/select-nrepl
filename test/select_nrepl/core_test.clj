@@ -43,4 +43,5 @@
 
 (deftest a-select-element
   (are [before after] (= (select :element before) after)
-    "<hello>" "<hello>"))
+    "<hello>" "<hello>"
+    "he<>llo" "<hello>"))
