@@ -1,7 +1,11 @@
 (ns select-nrepl.core-test
-  (:require [clojure.test :refer :all]
-            [select-nrepl.core :refer :all]))
+  (:require
+   [clojure.test :refer :all]
+   [select-nrepl.core]))
 
-(deftest a-test
-  (testing "FIXME, I fail."
-    (is (= 0 1))))
+(defn- select [kind text]
+  text)
+
+(deftest a-select-element
+  (are [before after] (= (select :element before) after)
+    "<hello>" "<hello>"))

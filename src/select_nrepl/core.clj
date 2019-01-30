@@ -1,6 +1,9 @@
 (ns select-nrepl.core)
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defmulti select
+  (fn [kind text start end]
+    kind))
+
+(defmethod select :element
+  [_ text start end]
+  [start end])
