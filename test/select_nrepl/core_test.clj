@@ -10,7 +10,9 @@
       (case ch
         \<       (assoc state :start (:position state))
         \>       (assoc state :end (:position state))
-        \newline (update state :position (fn [[i j]] [(inc i) 0]))
+        \newline (-> state
+                     (update :position (fn [[i j]] [(inc i) 0]))
+                     (update :text str ch))
         (-> state
           (update-in [:position 1] inc)
           (update :text str ch))))
@@ -53,5 +55,6 @@
     " 4200<>0  x"      " <42000>  x"
     "++ #\"<>x\" ;;-"  "++ <#\"x\"> ;;-"
     " #fo<>o \"h\" "   " <#foo \"h\"> "
+    " \"h<>ello\nw\" " " <\"hello\nw\"> "
 
     "( he<>llo there)" "( <hello> there)"))

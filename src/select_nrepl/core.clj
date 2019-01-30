@@ -41,8 +41,8 @@
 (defn- element?
   [z]
   (case (z/tag z)
-    :reader-macro   (= :token (-> z z/down z/right z/tag))
-    (:token :regex) true
+    :reader-macro               (= :token (-> z z/down z/right z/tag))
+    (:token :regex :multi-line) true
     false))
 
 (defmethod select :element
