@@ -1,7 +1,9 @@
 (ns select-nrepl.core
   (:require
    [rewrite-clj.node :as n]
-   [rewrite-clj.zip :as z]))
+   [rewrite-clj.zip :as z]
+   [nrepl.misc :refer [response-for]]
+   [nrepl.transport :as t]))
 
 (defmulti select
   (fn [kind text start end]
@@ -52,3 +54,15 @@
                             (and (inside? start z)
                                  (element? z))))
       this-node))
+
+(defn- response-for-select
+  [{:keys [code kind start end], :or {end start}, :as message}]
+  (let [[start' end'] (select (keyword kind) code start end)]
+    (response-for message :status :done :start start' :end end')))
+
+(defn wrap-select
+  [f]
+  (fn [{:keys [op transport] :as message}]
+    (if (= "select" op)
+      (t/send transport (response-for-select message))
+      (f message))))
