@@ -1,11 +1,5 @@
 (ns select-nrepl.dev
   (:require
    [clojure.repl :refer :all]
-   [clojure.test]
-   [clojure.tools.namespace.repl :refer [refresh]]
+   [midje.repl :refer :all]
    [rewrite-clj.zip :as z]))
-
-(defn run-tests
-  "Run tests."
-  []
-  (clojure.test/run-tests 'select-nrepl.core-test))

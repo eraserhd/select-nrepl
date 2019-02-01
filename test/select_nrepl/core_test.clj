@@ -1,6 +1,6 @@
 (ns select-nrepl.core-test
   (:require
-   [clojure.test :refer :all]
+   [midje.sweet :refer :all]
    [select-nrepl.core]))
 
 (defn- parse-input
@@ -43,10 +43,10 @@
         [start end] (select-nrepl.core/select kind text start end)]
     (compose-output text start end)))
 
-(deftest a-select-element
-  (are [before after] (= (select :element before) after)
-    ;;    Input             Output
-    ;;--------------   -----------------
+(facts "about selecting elements"
+  (tabular
+    (select :element ?input) => ?output
+    ?input             ?output
     "<hello>"          "<hello>"
     "  hello/<>world"  "  <hello/world>"
     " :foo/ba<>r"      " <:foo/bar>"
