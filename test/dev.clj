@@ -1,4 +1,4 @@
-(ns select-nrepl.dev
+(ns dev
   (:require
    [clojure.repl :refer :all]
    [midje.repl :refer :all]

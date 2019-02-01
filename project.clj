@@ -5,7 +5,7 @@
             :url "https://www.eclipse.org/legal/epl-2.0/"}
   :dependencies [[org.clojure/clojure "1.9.0"]
                  [rewrite-clj "0.6.1"]]
-  :repl-options {:init-ns select-nrepl.dev}
+  :repl-options {:init-ns dev}
   :plugins [[lein-midje "3.2.1"]]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]
                                   [midje "1.9.4"]]}})
