@@ -1,6 +1,8 @@
 (ns select-nrepl.test-helpers
   (:require
-   [select-nrepl.core]))
+   [select-nrepl.core]
+   [nrepl.core :as nrepl]
+   [nrepl.server]))
 
 (defn- parse-input
   [text]
@@ -37,7 +39,46 @@
                 (concat (seq text) [\space])))]
     (subs result 0 (dec (count result)))))
 
-(defn- select [kind input]
-  (let [{:keys [text start end]} (parse-input input)
-        [start end] (select-nrepl.core/select kind text start end)]
-    (compose-output text start end)))
+(def ^:private handler
+  (nrepl.server/default-handler select-nrepl.core/wrap-select))
+
+(defn- take-until
+  "Transducer like take-while, except keeps the last value tested."
+  [pred]
+  (fn [rf]
+    (fn
+      ([] (rf))
+      ([result] (rf result))
+      ([result input]
+       (let [result (rf result input)]
+         (cond
+          (reduced? result) result
+          (pred input)      (reduced result)
+          :else             result))))))
+
+(defn- until-status
+  "Process messages until we see one with a particular status."
+  [status]
+  (take-until #(contains? (into #{} (:status %)) status)))
+
+(defn select [kind input]
+  (let [server (binding [*file* nil]
+                 (nrepl.server/start-server :handler handler))]
+    (try
+      (let [conn (nrepl/connect :port (:port server))
+            client (nrepl/client conn 60000)
+            session (nrepl/client-session client)
+            {:keys [text start end]} (parse-input input)
+            msg-seq (session {:op "select"
+                              :kind kind
+                              :code text
+                              :selection-start-line (first start)
+                              :selection-start-column (second start)
+                              :selection-end-line (first end)
+                              :selection-end-column (second end)})
+            result (transduce (until-status "done") merge {} msg-seq)]
+        (compose-output text
+                        [(:selection-start-line result) (:selection-start-column result)]
+                        [(:selection-end-line result) (:selection-end-column result)]))
+      (finally
+        (nrepl.server/stop-server server)))))

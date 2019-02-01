@@ -66,7 +66,12 @@
                               code
                               [selection-start-line selection-start-column]
                               [selection-end-line selection-end-column])]
-    (response-for message :status :done :start start' :end end')))
+    (response-for message
+                  :status :done
+                  :selection-start-line (first start')
+                  :selection-start-column (second start')
+                  :selection-end-line (first end')
+                  :selection-end-column (second end'))))
 
 (defn wrap-select
   [f]
