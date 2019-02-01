@@ -17,7 +17,7 @@
           (update-in [:position 1] inc)
           (update :text str ch))))
     {:text ""
-     :position [0 0]
+     :position [1 1]
      :start nil
      :end nil}
     (seq text)))
@@ -34,7 +34,7 @@
                     (= ch \newline)             (update :position (fn [[i j]] [(inc i) 0]))
                     (not= ch \newline)          (update-in [:position 1] inc)))
                 {:text ""
-                 :position [0 0]}
+                 :position [1 1]}
                 (concat (seq text) [\space])))]
     (subs result 0 (dec (count result)))))
 

@@ -9,11 +9,8 @@
   (fn [kind text start end]
     kind))
 
-(defn- ->zero-based [[i j]]
-  [(dec i) (dec j)])
-
 (defn- start-position [z]
-  (->zero-based (z/position z)))
+  (z/position z))
 
 (defn- end-position [z]
   (let [[i j] (start-position z)
@@ -56,8 +53,19 @@
       this-node))
 
 (defn- response-for-select
-  [{:keys [code kind start end], :or {end start}, :as message}]
-  (let [[start' end'] (select (keyword kind) code start end)]
+  [{:keys [code
+           kind
+           selection-start-line
+           selection-start-column
+           selection-end-line
+           selection-end-column],
+    :or {selection-end-line selection-start-line
+         selection-end-column selection-start-column},
+    :as message}]
+  (let [[start' end'] (select (keyword kind)
+                              code
+                              [selection-start-line selection-start-column]
+                              [selection-end-line selection-end-column])]
     (response-for message :status :done :start start' :end end')))
 
 (defn wrap-select
