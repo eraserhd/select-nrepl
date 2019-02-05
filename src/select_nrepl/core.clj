@@ -59,6 +59,12 @@
   [_ _]
   nil)
 
+(defmethod extent ["inside" :regex]
+  [_ z]
+  (let [[si sj] (start-position z)
+        [ei ej] (end-position z)]
+    [[si (+ 2 sj)] [ei (dec ej)]]))
+
 (defmethod extent ["inside" :token]
   [_ z]
   (cond
