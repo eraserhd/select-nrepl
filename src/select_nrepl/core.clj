@@ -6,9 +6,7 @@
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
 
-(defmulti select
-  (fn [kind text start end]
-    kind))
+(defmulti select :kind)
 
 (defn- start-position [z]
   (z/position z))
@@ -45,30 +43,19 @@
   (position<=? cursor (end-position z)))
 
 (defmethod select "element"
-  [_ text start _]
-  (-> (z/of-string text {:track-position? true})
-      (z/find-depth-first (fn [z]
-                            (and (acceptable? z start)
-                                 (element? z))))
-      this-node))
+  [{:keys [code selection-start-line selection-start-column]}]
+  (let [start [selection-start-line selection-start-column]]
+    (-> (z/of-string code {:track-position? true})
+        (z/find-depth-first (fn [z]
+                              (and (acceptable? z start)
+                                   (element? z))))
+        this-node)))
 
 (defn- response-for-select
-  [{:keys [code
-           kind
-           selection-start-line
-           selection-start-column
-           selection-end-line
-           selection-end-column],
-    :or {selection-end-line selection-start-line
-         selection-end-column selection-start-column},
-    :as message}]
-  (if-let [[[si sj] [ei ej]] (try
-                               (select kind
-                                       code
-                                       [selection-start-line selection-start-column]
-                                       [selection-end-line selection-end-column])
-                               (catch Throwable t
-                                 nil))]
+  [message]
+  (if-let [[[si sj] [ei ej]] (try (select message)
+                                  (catch Throwable t
+                                    nil))]
     (response-for message {:status :done
                            :selection-start-line si
                            :selection-start-column sj
