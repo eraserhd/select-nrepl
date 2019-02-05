@@ -17,4 +17,5 @@
     " #fo<>o \"h\" "   " <#foo \"h\"> "
     " \"h<>ello\nw\" " " <\"hello\nw\"> "
 
-    "( he<>llo there)" "( <hello> there)"))
+    "( he<>llo there)" "( <hello> there)"
+    "h <>"             "h "))

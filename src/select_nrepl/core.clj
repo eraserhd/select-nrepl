@@ -62,16 +62,16 @@
     :or {selection-end-line selection-start-line
          selection-end-column selection-start-column},
     :as message}]
-  (let [[start' end'] (select (keyword kind)
-                              code
-                              [selection-start-line selection-start-column]
-                              [selection-end-line selection-end-column])]
-    (response-for message
-                  :status :done
-                  :selection-start-line (first start')
-                  :selection-start-column (second start')
-                  :selection-end-line (first end')
-                  :selection-end-column (second end'))))
+  (if-let [[[si sj] [ei ej]] (select (keyword kind)
+                                     code
+                                     [selection-start-line selection-start-column]
+                                     [selection-end-line selection-end-column])]
+    (response-for message {:status :done
+                           :selection-start-line si
+                           :selection-start-column sj
+                           :selection-end-line ei
+                           :selection-end-column ej})
+    (response-for message {:status :done})))
 
 (defn wrap-select
   [f]
