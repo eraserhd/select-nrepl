@@ -18,9 +18,9 @@
         lines (count (filter #{\newline} (seq s)))
         columns (count (re-find #"[^\n]*$" s))]
     [(+ i lines)
-     (if (zero? lines)
-       (+ j columns)
-       columns)]))
+     (dec (if (zero? lines)
+            (+ j columns)
+            columns))]))
 
 (defn- position<=? [a b]
   (<= (compare a b) 0))

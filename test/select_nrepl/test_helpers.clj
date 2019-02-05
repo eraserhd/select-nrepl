@@ -25,12 +25,13 @@
 
 (defn- compose-output
   [text start end]
-  (let [result
+  (let [end' [(first end) (inc (second end))]
+        result
         (:text (reduce
                 (fn [state ch]
                   (cond-> state
                     (= start (:position state)) (update :text str \<)
-                    (= end (:position state))   (update :text str \>)
+                    (= end' (:position state))  (update :text str \>)
                     true                        (update :text str ch)
                     (= ch \newline)             (update :position (fn [[i j]] [(inc i) 0]))
                     (not= ch \newline)          (update-in [:position 1] inc)))
