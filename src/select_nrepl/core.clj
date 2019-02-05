@@ -62,10 +62,13 @@
     :or {selection-end-line selection-start-line
          selection-end-column selection-start-column},
     :as message}]
-  (if-let [[[si sj] [ei ej]] (select (keyword kind)
-                                     code
-                                     [selection-start-line selection-start-column]
-                                     [selection-end-line selection-end-column])]
+  (if-let [[[si sj] [ei ej]] (try
+                               (select (keyword kind)
+                                       code
+                                       [selection-start-line selection-start-column]
+                                       [selection-end-line selection-end-column])
+                               (catch Throwable t
+                                 nil))]
     (response-for message {:status :done
                            :selection-start-line si
                            :selection-start-column sj
