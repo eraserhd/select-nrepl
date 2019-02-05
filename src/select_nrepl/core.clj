@@ -2,6 +2,7 @@
   (:require
    [rewrite-clj.node :as n]
    [rewrite-clj.zip :as z]
+   [nrepl.middleware :refer [set-descriptor!]]
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
 
@@ -81,3 +82,22 @@
     (if (= "select" op)
       (t/send transport (response-for-select message))
       (f message))))
+
+(set-descriptor! #'wrap-select
+  {:doc "Middleware that aids an editor in finding structural objects in source."
+   :handles
+   {"select"
+    {:doc "Find an object"
+     :requires
+     {"code" "The entire source of the file."
+      "kind" "The kind of object (i.e. \"element\")"
+      "selection-start-line" "The current ones-based selection start/cursor line."
+      "selection-start-column" "The current ones-based selection start/cursor column."}
+     :optional
+     {"selection-end-line" "The ones-based ending line of the last character of the selection."
+      "selection-end-column" "The ones-based ending column of the last character of the selection."}
+     :returns
+     {"selection-start-line" "The ones-based starting line of the found object."
+      "selection-start-column" "The ones-based starting column of the found object."
+      "selection-end-line" "The ones-based line of the last character of the object."
+      "selection-end-column" "The ones-based column of the last character of the object."}}}})
