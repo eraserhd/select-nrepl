@@ -28,4 +28,5 @@
     ?input ?output
     " \"a s<t>ring\" "  " \"<a string>\" "
     " #\"a <>regex\" x" " #\"<a regex>\" x"
-    " #fo<>o \"hi\" "   " #foo \"<hi>\" "))
+    " #fo<>o \"hi\" "   " #foo \"<hi>\" "
+    " \"he\nt<>here \"" " \"<he\nthere >\""))

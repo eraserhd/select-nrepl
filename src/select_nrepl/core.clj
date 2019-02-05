@@ -77,6 +77,12 @@
                            [[si (inc sj)] [ei (dec ej)]])
    :else                 [(start-position z) (end-position z)]))
 
+(defmethod extent ["inside" :multi-line]
+  [message z]
+  (let [[si sj] (start-position z)
+        [ei ej] (end-position z)]
+    [[si (inc sj)] [ei (dec ej)]]))
+
 (defn- response-for-select
   [message]
   (if-let [[[si sj] [ei ej]] (try (extent message (select message))
