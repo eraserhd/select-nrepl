@@ -5,7 +5,7 @@
 
 (facts "about selecting elements"
   (tabular
-    (select "element" ?input) => ?output
+    (select "whole" "element" ?input) => ?output
     ?input             ?output
     "<hello>"          "<hello>"
     "  hello/<>world"  "  <hello/world>"
@@ -21,4 +21,9 @@
     "h <>"             "h "
     "<> h ello"        " <h> ello"
     "h <> (ello t)"    "h  (<ello> t)"
-    "h <> ([ello t])"  "h  ([<ello> t])"))
+    "h <> ([ello t])"  "h  ([<ello> t])")
+
+  (tabular
+    (select "inside" "element" ?input) => ?output
+    ?input ?output
+    " \"a s<t>ring\" "  " \"<a string>\" "))

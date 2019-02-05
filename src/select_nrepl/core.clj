@@ -49,16 +49,23 @@
   "Find the extend of the node at z, accounting for the node type
   and whether we want an \"inside\" or \"whole\" extent."
   (fn [message z]
-    [(if (:inside message) :inside :whole)
-     (when z (z/tag z))]))
+    [(or (:extent message) "whole") (when z (z/tag z))]))
 
 (defmethod extent :default
   [_ z]
   [(start-position z) (end-position z)])
 
-(defmethod extent [:whole nil]
+(defmethod extent ["whole" nil]
   [_ _]
   nil)
+
+(defmethod extent ["inside" :token]
+  [_ z]
+  (cond
+   (string? (z/value z)) (let [[si sj] (start-position z)
+                               [ei ej] (end-position z)]
+                           [[si (inc sj)] [ei (dec ej)]])
+   :else                 [(start-position z) (end-position z)]))
 
 (defn- response-for-select
   [message]
@@ -90,7 +97,8 @@
       "selection-start-line" "The current ones-based selection start/cursor line."
       "selection-start-column" "The current ones-based selection start/cursor column."}
      :optional
-     {"selection-end-line" "The ones-based ending line of the last character of the selection."
+     {"extent" "\"whole\" for the whole object, or \"inside\" for its insides."
+      "selection-end-line" "The ones-based ending line of the last character of the selection."
       "selection-end-column" "The ones-based ending column of the last character of the selection."}
      :returns
      {"selection-start-line" "The ones-based starting line of the found object."

@@ -64,7 +64,7 @@
   [status]
   (take-until #(contains? (into #{} (:status %)) status)))
 
-(defn select [kind input]
+(defn select [extent kind input]
   (let [server (binding [*file* nil]
                  (nrepl.server/start-server :handler handler))]
     (try
@@ -73,6 +73,7 @@
             session (nrepl/client-session client)
             {:keys [text start end]} (parse-input input)
             msg-seq (session {:op "select"
+                              :extent extent
                               :kind kind
                               :code text
                               :selection-start-line (first start)
