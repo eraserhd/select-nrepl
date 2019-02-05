@@ -25,13 +25,6 @@
 (defn- position<=? [a b]
   (<= (compare a b) 0))
 
-(defn- inside?
-  "Is i.j inside the node pointed to by z?"
-  [p z]
-  (when z
-    (and (position<=? (start-position z) p)
-         (position<=? p (end-position z)))))
-
 (defn- this-node
   [z]
   (when z
@@ -44,11 +37,17 @@
     (:token :regex :multi-line) true
     false))
 
+(defn- acceptable?
+  "A node is acceptable if it contains the cursor or starts after
+  cursor.  In other words, if it ends after the cursor (inclusive)."
+  [z cursor]
+  (position<=? cursor (end-position z)))
+
 (defmethod select :element
   [_ text start _]
   (-> (z/of-string text {:track-position? true})
       (z/find-depth-first (fn [z]
-                            (and (inside? start z)
+                            (and (acceptable? z start)
                                  (element? z))))
       this-node))
 

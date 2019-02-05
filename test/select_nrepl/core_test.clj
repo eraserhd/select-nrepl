@@ -18,4 +18,7 @@
     " \"h<>ello\nw\" " " <\"hello\nw\"> "
 
     "( he<>llo there)" "( <hello> there)"
-    "h <>"             "h "))
+    "h <>"             "h "
+    "<> h ello"        " <h> ello"
+    "h <> (ello t)"    "h  (<ello> t)"
+    "h <> ([ello t])"  "h  ([<ello> t])"))
