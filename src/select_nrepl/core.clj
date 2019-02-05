@@ -45,6 +45,12 @@
                               (and (acceptable? z start)
                                    (element? z)))))))
 
+
+(defn- shrink [z start-offset end-offset]
+  (let [[si sj] (start-position z)
+        [ei ej] (end-position z)]
+    [[si (+ sj start-offset)] [ei (- ej end-offset)]]))
+
 (defmulti extent
   "Find the extend of the node at z, accounting for the node type
   and whether we want an \"inside\" or \"whole\" extent."
@@ -65,23 +71,17 @@
 
 (defmethod extent ["inside" :regex]
   [_ z]
-  (let [[si sj] (start-position z)
-        [ei ej] (end-position z)]
-    [[si (+ 2 sj)] [ei (dec ej)]]))
+  (shrink z 2 1))
 
 (defmethod extent ["inside" :token]
   [_ z]
   (cond
-   (string? (z/value z)) (let [[si sj] (start-position z)
-                               [ei ej] (end-position z)]
-                           [[si (inc sj)] [ei (dec ej)]])
+   (string? (z/value z)) (shrink z 1 1)
    :else                 [(start-position z) (end-position z)]))
 
 (defmethod extent ["inside" :multi-line]
   [message z]
-  (let [[si sj] (start-position z)
-        [ei ej] (end-position z)]
-    [[si (inc sj)] [ei (dec ej)]]))
+  (shrink z 1 1))
 
 (defn- response-for-select
   [message]
