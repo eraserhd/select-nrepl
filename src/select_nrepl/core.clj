@@ -6,8 +6,6 @@
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
 
-(defmulti select :kind)
-
 (defn- start-position [z]
   (z/position z))
 
@@ -24,11 +22,6 @@
 (defn- position<=? [a b]
   (<= (compare a b) 0))
 
-(defn- this-node
-  [z]
-  (when z
-    [(start-position z) (end-position z)]))
-
 (defn- element?
   [z]
   (case (z/tag z)
@@ -42,6 +35,8 @@
   [z cursor]
   (position<=? cursor (end-position z)))
 
+(defmulti select :kind)
+
 (defmethod select "element"
   [{:keys [code selection-start-line selection-start-column]}]
   (let [start [selection-start-line selection-start-column]]
@@ -50,9 +45,24 @@
                               (and (acceptable? z start)
                                    (element? z)))))))
 
+(defmulti extent
+  "Find the extend of the node at z, accounting for the node type
+  and whether we want an \"inside\" or \"whole\" extent."
+  (fn [message z]
+    [(if (:inside message) :inside :whole)
+     (when z (z/tag z))]))
+
+(defmethod extent :default
+  [_ z]
+  [(start-position z) (end-position z)])
+
+(defmethod extent [:whole nil]
+  [_ _]
+  nil)
+
 (defn- response-for-select
   [message]
-  (if-let [[[si sj] [ei ej]] (try (this-node (select message))
+  (if-let [[[si sj] [ei ej]] (try (extent message (select message))
                                   (catch Throwable t
                                     nil))]
     (response-for message {:status :done
