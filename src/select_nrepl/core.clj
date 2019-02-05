@@ -44,7 +44,7 @@
   [z cursor]
   (position<=? cursor (end-position z)))
 
-(defmethod select :element
+(defmethod select "element"
   [_ text start _]
   (-> (z/of-string text {:track-position? true})
       (z/find-depth-first (fn [z]
@@ -63,7 +63,7 @@
          selection-end-column selection-start-column},
     :as message}]
   (if-let [[[si sj] [ei ej]] (try
-                               (select (keyword kind)
+                               (select kind
                                        code
                                        [selection-start-line selection-start-column]
                                        [selection-end-line selection-end-column])

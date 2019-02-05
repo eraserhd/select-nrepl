@@ -5,7 +5,7 @@
 
 (facts "about selecting elements"
   (tabular
-    (select :element ?input) => ?output
+    (select "element" ?input) => ?output
     ?input             ?output
     "<hello>"          "<hello>"
     "  hello/<>world"  "  <hello/world>"
