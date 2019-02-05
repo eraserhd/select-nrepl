@@ -59,6 +59,10 @@
   [_ _]
   nil)
 
+(defmethod extent ["inside" :reader-macro]
+  [message z]
+  (extent message (-> z z/down z/right)))
+
 (defmethod extent ["inside" :regex]
   [_ z]
   (let [[si sj] (start-position z)

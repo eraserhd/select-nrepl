@@ -27,4 +27,5 @@
     (select "inside" "element" ?input) => ?output
     ?input ?output
     " \"a s<t>ring\" "  " \"<a string>\" "
-    " #\"a <>regex\" x" " #\"<a regex>\" x"))
+    " #\"a <>regex\" x" " #\"<a regex>\" x"
+    " #fo<>o \"hi\" "   " #foo \"<hi>\" "))
