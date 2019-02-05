@@ -48,12 +48,11 @@
     (-> (z/of-string code {:track-position? true})
         (z/find-depth-first (fn [z]
                               (and (acceptable? z start)
-                                   (element? z))))
-        this-node)))
+                                   (element? z)))))))
 
 (defn- response-for-select
   [message]
-  (if-let [[[si sj] [ei ej]] (try (select message)
+  (if-let [[[si sj] [ei ej]] (try (this-node (select message))
                                   (catch Throwable t
                                     nil))]
     (response-for message {:status :done
