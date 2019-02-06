@@ -52,33 +52,27 @@
                                  (recur (z/right z))))
       :else                  (recur (z/right z)))))
 
-(defmulti select :kind)
+(defn- add-embellishments [z embellishments]
+  (loop [z z]
+    (if (some-> z z/up z/tag embellishments)
+      (recur (z/up z))
+      z)))
 
-(def ^:private element-embellishments
-  #{:reader-macro})
+(defmulti select :kind)
 
 (defmethod select "element"
   [{:keys [code selection-start-line selection-start-column]}]
-  (let [start [selection-start-line selection-start-column]
-        z (-> (z/of-string code {:track-position? true})
-              (find-acceptable start element?))]
-    (loop [z z]
-      (if (some-> z z/up z/tag element-embellishments)
-        (recur (z/up z))
-        z))))
-
-(def ^:private form-embellishments
-  #{:syntax-quote :unquote :unquote-splicing :namespaced-map})
+  (let [start [selection-start-line selection-start-column]]
+    (-> (z/of-string code {:track-position? true})
+        (find-acceptable start element?)
+        (add-embellishments #{:reader-macro}))))
 
 (defmethod select "form"
   [{:keys [code selection-start-line selection-start-column]}]
-  (let [start [selection-start-line selection-start-column]
-        z (-> (z/of-string code {:track-position? true})
-              (find-acceptable start form?))]
-    (loop [z z]
-      (if (some-> z z/up z/tag form-embellishments)
-        (recur (z/up z))
-        z))))
+  (let [start [selection-start-line selection-start-column]]
+    (-> (z/of-string code {:track-position? true})
+        (find-acceptable start form?)
+        (add-embellishments #{:syntax-quote :unquote :unquote-splicing :namespaced-map}))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
