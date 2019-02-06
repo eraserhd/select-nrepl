@@ -29,30 +29,56 @@
     (:token :regex :multi-line) true
     false))
 
+(defn- form?
+  [z]
+  (case (z/tag z)
+    (:list :vector :map :set) true
+    false))
+
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
   [z cursor]
   (position<=? cursor (end-position z)))
 
+(defn- find-acceptable [z cursor ok?]
+  (loop [z z]
+    (cond
+      (nil? z)               nil
+      (acceptable? z cursor) (if-let [z' (some-> z z/down (find-acceptable cursor ok?))]
+                               z'
+                               (if (ok? z)
+                                 z
+                                 (recur (z/right z))))
+      :else                  (recur (z/right z)))))
+
 (defmulti select :kind)
+
+(def ^:private element-embellishments
+  #{:reader-macro})
 
 (defmethod select "element"
   [{:keys [code selection-start-line selection-start-column]}]
-  (let [start [selection-start-line selection-start-column]]
-    (-> (z/of-string code {:track-position? true})
-        (z/find-depth-first (fn [z]
-                              (and (acceptable? z start)
-                                   (element? z)))))))
+  (let [start [selection-start-line selection-start-column]
+        z (-> (z/of-string code {:track-position? true})
+              (find-acceptable start element?))]
+    (loop [z z]
+      (if (some-> z z/up z/tag element-embellishments)
+        (recur (z/up z))
+        z))))
+
+(def ^:private form-embellishments
+  #{:syntax-quote :unquote :unquote-splicing :namespaced-map})
 
 (defmethod select "form"
   [{:keys [code selection-start-line selection-start-column]}]
-  (let [start [selection-start-line selection-start-column]]
-    (-> (z/of-string code {:track-position? true})
-        (z/find-depth-first (fn [z]
-                              (and (acceptable? z start)
-                                   (not (element? z))))))))
-
+  (let [start [selection-start-line selection-start-column]
+        z (-> (z/of-string code {:track-position? true})
+              (find-acceptable start form?))]
+    (loop [z z]
+      (if (some-> z z/up z/tag form-embellishments)
+        (recur (z/up z))
+        z))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)

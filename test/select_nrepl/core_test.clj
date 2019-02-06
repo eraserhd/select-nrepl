@@ -42,4 +42,6 @@
     "x #:foo{:b<>ar 4} 4" "x <#:foo{:bar 4}> 4"
     "x `(foo ~b<>ar) 4"   "x <`(foo ~bar)> 4"
     "x ~(foo ~b<>ar) 4"   "x <~(foo ~bar)> 4"
-    "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"))
+    "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"
+
+    "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"))
