@@ -45,6 +45,14 @@
                               (and (acceptable? z start)
                                    (element? z)))))))
 
+(defmethod select "form"
+  [{:keys [code selection-start-line selection-start-column]}]
+  (let [start [selection-start-line selection-start-column]]
+    (-> (z/of-string code {:track-position? true})
+        (z/find-depth-first (fn [z]
+                              (and (acceptable? z start)
+                                   (not (element? z))))))))
+
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)

@@ -30,3 +30,16 @@
     " #\"a <>regex\" x" " #\"<a regex>\" x"
     " #fo<>o \"hi\" "   " #foo \"<hi>\" "
     " \"he\nt<>here \"" " \"<he\nthere >\""))
+
+(facts "about selecting forms"
+  (tabular
+    (select "whole" "form" ?input) => ?output
+    ?input                ?output
+    "x (he<>l wo) 4"      "x <(hel wo)> 4"
+    "x [he<>l wo] 4"      "x <[hel wo]> 4"
+    "x {he<>l wo} 4"      "x <{hel wo}> 4"
+    "x #{he<>l wo} 4"     "x <#{hel wo}> 4"
+    "x #:foo{:b<>ar 4} 4" "x <#:foo{:bar 4}> 4"
+    "x `(foo ~b<>ar) 4"   "x <`(foo ~bar)> 4"
+    "x ~(foo ~b<>ar) 4"   "x <~(foo ~bar)> 4"
+    "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"))
