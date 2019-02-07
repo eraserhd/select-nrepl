@@ -85,15 +85,16 @@
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start element?)
-        (add-embellishments #{:reader-macro :meta :meta*}))))
+        (add-embellishments #{:meta :meta* :reader-macro}))))
 
 (defmethod select "form"
   [{:keys [code selection-start-line selection-start-column]}]
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start form?)
-        (add-embellishments #{:meta :meta* :syntax-quote :unquote :unquote-splicing :namespaced-map :quote
-                              :reader-macro}))))
+        (add-embellishments #{:namespaced-map :meta :meta* :reader-macro
+                              :syntax-quote :unquote :unquote-splicing
+                              :quote}))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
