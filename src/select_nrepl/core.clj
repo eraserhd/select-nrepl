@@ -92,7 +92,7 @@
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start form?)
-        (add-embellishments #{:syntax-quote :unquote :unquote-splicing :namespaced-map}))))
+        (add-embellishments #{:meta :meta* :syntax-quote :unquote :unquote-splicing :namespaced-map}))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
