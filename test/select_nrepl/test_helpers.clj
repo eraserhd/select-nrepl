@@ -25,21 +25,17 @@
 
 (defn- compose-output
   [text start end]
-  (if (and (first end) (second end))
-    (let [result
-          (:text (reduce
-                  (fn [state ch]
-                    (as-> state $
-                      (cond-> $ (= start (:position $)) (update :text str \<))
-                      (update $ :text str ch)
-                      (cond-> $ (= end (:position $))   (update :text str \>))
-                      (update-in $ [:position 1] inc)
-                      (cond-> $ (= ch \newline)         (update :position (fn [[i j]] [(inc i) 1])))))
-                  {:text ""
-                   :position [1 1]}
-                  (concat (seq text) [\space])))]
-      (subs result 0 (dec (count result))))
-    text))
+  (:text (reduce
+          (fn [state ch]
+            (as-> state $
+              (cond-> $ (= start (:position $)) (update :text str \<))
+              (update $ :text str ch)
+              (cond-> $ (= end (:position $))   (update :text str \>))
+              (update-in $ [:position 1] inc)
+              (cond-> $ (= ch \newline)         (update :position (fn [[i j]] [(inc i) 1])))))
+          {:text ""
+           :position [1 1]}
+          (seq text))))
 
 (def ^:private handler
   (nrepl.server/default-handler select-nrepl.core/wrap-select))
