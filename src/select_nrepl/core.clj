@@ -85,7 +85,7 @@
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start element?)
-        (add-embellishments #{:reader-macro}))))
+        (add-embellishments #{:reader-macro :meta :meta*}))))
 
 (defmethod select "form"
   [{:keys [code selection-start-line selection-start-column]}]

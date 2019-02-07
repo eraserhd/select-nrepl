@@ -16,6 +16,8 @@
     "++ #\"<>x\" ;;-"  "++ <#\"x\"> ;;-"
     " #fo<>o \"h\" "   " <#foo \"h\"> "
     " \"h<>ello\nw\" " " <\"hello\nw\"> "
+    "a ^S foo<>b y"    "a <^S foob> y"
+    "a #^S foo<>b y"   "a <#^S foob> y"
 
     "( he<>llo there)" "( <hello> there)"
     "h <>"             "h "
