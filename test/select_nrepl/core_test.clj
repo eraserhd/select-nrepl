@@ -45,4 +45,18 @@
     "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"
 
     "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"
-    "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
+    "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>")
+  (tabular
+    (select "inside" "form" ?input) => ?output
+    ?input                ?output
+    "x (he<>l wo) 4"      "x (<hel wo>) 4"
+    "x [he<>l wo] 4"      "x [<hel wo>] 4"
+    "x {he<>l wo} 4"      "x {<hel wo>} 4"
+    "x #{he<>l wo} 4"     "x #{<hel wo>} 4"
+    "x #:foo{:b<>ar 4} 4" "x #:foo{<:bar 4>} 4"
+    "x `(foo ~b<>ar) 4"   "x `(<foo ~bar>) 4"
+    "x ~(foo ~b<>ar) 4"   "x ~(<foo ~bar>) 4"
+    "x ~@(foo ~b<>ar) 4"  "x ~@(<foo ~bar>) 4"
+
+    "x (he (ll<>o wo) l)" "x (he (<llo wo>) l)"
+    "x (h<>e (llo wo) l)" "x (<he (llo wo) l>)"))

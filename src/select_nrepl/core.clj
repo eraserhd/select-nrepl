@@ -113,6 +113,22 @@
   [_ _]
   nil)
 
+(defmethod extent ["inside" :list]
+  [message z]
+  (shrink z 1 1))
+
+(defmethod extent ["inside" :namespaced-map]
+  [message z]
+  (extent message (-> z z/down z/right)))
+
+(defmethod extent ["inside" :map]
+  [message z]
+  (shrink z 1 1))
+
+(defmethod extent ["inside" :multi-line]
+  [message z]
+  (shrink z 1 1))
+
 (defmethod extent ["inside" :reader-macro]
   [message z]
   (extent message (-> z z/down z/right)))
@@ -121,14 +137,30 @@
   [_ z]
   (shrink z 2 1))
 
+(defmethod extent ["inside" :set]
+  [message z]
+  (shrink z 2 1))
+
+(defmethod extent ["inside" :syntax-quote]
+  [message z]
+  (extent message (-> z z/down)))
+
 (defmethod extent ["inside" :token]
   [_ z]
   (cond
    (string? (z/value z)) (shrink z 1 1)
    :else                 [(start-position z) (end-position z)]))
 
-(defmethod extent ["inside" :multi-line]
+(defmethod extent ["inside" :unquote]
   [message z]
+  (extent message (-> z z/down)))
+
+(defmethod extent ["inside" :unquote-splicing]
+  [message z]
+  (extent message (-> z z/down)))
+
+(defmethod extent ["inside" :vector]
+  [_ z]
   (shrink z 1 1))
 
 (defn- response-for-select
