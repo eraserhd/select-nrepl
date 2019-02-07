@@ -48,6 +48,7 @@
     "x ^S {he<>l wo} 4"   "x <^S {hel wo}> 4"
     "x #^S {he<>l wo} 4"  "x <#^S {hel wo}> 4"
     "x '(he<>l wo) 4"     "x <'(hel wo)> 4"
+    "x #f/b (he<>l wo) 4" "x <#f/b (hel wo)> 4"
 
     "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"
     "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>")
