@@ -26,16 +26,15 @@
 (defn- compose-output
   [text start end]
   (if (and (first end) (second end))
-    (let [end' [(first end) (inc (second end))]
-          result
+    (let [result
           (:text (reduce
                   (fn [state ch]
-                    (cond-> state
-                      (= start (:position state)) (update :text str \<)
-                      (= end' (:position state))  (update :text str \>)
-                      true                        (update :text str ch)
-                      (= ch \newline)             (update :position (fn [[i j]] [(inc i) 0]))
-                      (not= ch \newline)          (update-in [:position 1] inc)))
+                    (as-> state $
+                      (cond-> $ (= start (:position $)) (update :text str \<))
+                      (update $ :text str ch)
+                      (cond-> $ (= end (:position $))   (update :text str \>))
+                      (update-in $ [:position 1] inc)
+                      (cond-> $ (= ch \newline)         (update :position (fn [[i j]] [(inc i) 1])))))
                   {:text ""
                    :position [1 1]}
                   (concat (seq text) [\space])))]

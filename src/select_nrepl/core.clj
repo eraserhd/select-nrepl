@@ -17,7 +17,7 @@
     [(+ i lines)
      (dec (if (zero? lines)
             (+ j columns)
-            columns))]))
+            (inc columns)))]))
 
 (defn- position<=? [a b]
   (<= (compare a b) 0))
