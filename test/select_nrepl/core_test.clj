@@ -66,3 +66,11 @@
 
     "x (he (ll<>o wo) l)" "x (he (<llo wo>) l)"
     "x (h<>e (llo wo) l)" "x (<he (llo wo) l>)"))
+
+(facts "about selecting toplevel forms"
+  (tabular
+    (select "whole" "toplevel" ?input) => ?output
+    ?input                ?output
+    "x (he (ll<>o wo) l)" "x <(he (llo wo) l)>"
+    "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"
+    "x<> (he (llo wo) l)" "x <(he (llo wo) l)>"))

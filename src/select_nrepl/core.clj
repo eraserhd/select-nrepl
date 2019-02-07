@@ -96,6 +96,17 @@
                               :syntax-quote :unquote :unquote-splicing
                               :quote}))))
 
+(defmethod select "toplevel"
+  [{:keys [code selection-start-line selection-start-column]}]
+  (let [start [selection-start-line selection-start-column]]
+    (-> (z/of-string code {:track-position? true})
+        (z/find-depth-first (fn [z]
+                              (and (acceptable? z start)
+                                   (form? z))))
+        (add-embellishments #{:namespaced-map :meta :meta* :reader-macro
+                              :syntax-quote :unquote :unquote-splicing
+                              :quote}))))
+
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
         [ei ej] (end-position z)]
