@@ -35,6 +35,22 @@
     (:list :vector :map :set) true
     false))
 
+(defn- inside?
+  [z cursor]
+  (and (position<=? (start-position z) cursor)
+       (position<=? cursor (end-position z))))
+
+(defn- find-inside [z cursor ok?]
+  (loop [z z]
+    (cond
+      (nil? z)           nil
+      (inside? z cursor) (if-let [z' (some-> z z/down (find-inside cursor ok?))]
+                           z'
+                           (if (ok? z)
+                             z
+                             (recur (z/right z))))
+      :else              (recur (z/right z)))))
+
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
@@ -52,6 +68,10 @@
                                  (recur (z/right z))))
       :else                  (recur (z/right z)))))
 
+(defn- find-object [z cursor ok?]
+  (or (find-inside z cursor ok?)
+      (find-acceptable z cursor ok?)))
+
 (defn- add-embellishments [z embellishments]
   (loop [z z]
     (if (some-> z z/up z/tag embellishments)
@@ -64,14 +84,14 @@
   [{:keys [code selection-start-line selection-start-column]}]
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
-        (find-acceptable start element?)
+        (find-object start element?)
         (add-embellishments #{:reader-macro}))))
 
 (defmethod select "form"
   [{:keys [code selection-start-line selection-start-column]}]
   (let [start [selection-start-line selection-start-column]]
     (-> (z/of-string code {:track-position? true})
-        (find-acceptable start form?)
+        (find-object start form?)
         (add-embellishments #{:syntax-quote :unquote :unquote-splicing :namespaced-map}))))
 
 (defn- shrink [z start-offset end-offset]

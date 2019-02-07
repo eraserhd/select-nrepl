@@ -44,4 +44,5 @@
     "x ~(foo ~b<>ar) 4"   "x <~(foo ~bar)> 4"
     "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"
 
-    "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"))
+    "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"
+    "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
