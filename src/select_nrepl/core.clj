@@ -1,7 +1,7 @@
 (ns select-nrepl.core
   (:require
-   [rewrite-clj.node :as n]
-   [rewrite-clj.zip :as z]
+   [select-nrepl.rewrite-clj.node :as n]
+   [select-nrepl.rewrite-clj.zip :as z]
    [nrepl.middleware :refer [set-descriptor!]]
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
