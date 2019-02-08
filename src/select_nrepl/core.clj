@@ -6,18 +6,16 @@
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
 
-(defn- start-position [z]
-  (z/position z))
+(def ^:private start-position z/position)
 
 (defn- end-position [z]
   (let [[i j] (start-position z)
         s (z/string z)
         lines (count (filter #{\newline} (seq s)))
         columns (count (re-find #"[^\n]*$" s))]
-    [(+ i lines)
-     (dec (if (zero? lines)
-            (+ j columns)
-            (inc columns)))]))
+    [(+ i lines) (if (zero? lines)
+                   (+ j columns -1)
+                   columns)]))
 
 (defn- position<=? [a b]
   (<= (compare a b) 0))
