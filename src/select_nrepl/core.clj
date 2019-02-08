@@ -106,6 +106,9 @@
         [ei ej] (end-position z)]
     [[si (+ sj start-offset)] [ei (- ej end-offset)]]))
 
+(defn- outside-extent [z]
+  [(start-position z) (end-position z)])
+
 (defn- inside-extent [z]
   (case (z/tag z)
     (:list :map :multi-line :vector)           (shrink z 1 1)
@@ -114,18 +117,18 @@
     (:syntax-quote :unquote :unquote-splicing) (recur (-> z z/down))
     (:token)                                   (if (string? (z/value z))
                                                  (shrink z 1 1)
-                                                 [(start-position z) (end-position z)])
-    #_otherwise                                [(start-position z) (end-position z)]))
+                                                 (outside-extent z))
+    #_otherwise                                (outside-extent z)))
 
-(defn- extent [message z]
+(defn- selection-extent [message z]
   (when z
     (if (= "inside" (:extent message))
       (inside-extent z)
-      [(start-position z) (end-position z)])))
+      (outside-extent z))))
 
 (defn- response-for-select
   [message]
-  (if-let [[[si sj] [ei ej]] (try (extent message (select message))
+  (if-let [[[si sj] [ei ej]] (try (selection-extent message (select message))
                                   (catch Throwable t
                                     nil))]
     (response-for message {:status :done
