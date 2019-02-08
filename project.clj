@@ -8,4 +8,5 @@
   :repl-options {:init-ns dev}
   :plugins [[lein-midje "3.2.1"]]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.11"]
-                                  [midje "1.9.4"]]}})
+                                  [midje "1.9.4"]]
+                   :repl-options {:nrepl-middleware [select-nrepl.core/wrap-select]}}})
