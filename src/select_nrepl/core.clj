@@ -154,9 +154,9 @@
 
 (defmethod extent ["inside" :token]
   [_ z]
-  (cond
-   (string? (z/value z)) (shrink z 1 1)
-   :else                 [(start-position z) (end-position z)]))
+  (if (string? (z/value z))
+    (shrink z 1 1)
+    [(start-position z) (end-position z)]))
 
 (defmethod extent ["inside" :unquote]
   [message z]
