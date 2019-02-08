@@ -1,6 +1,6 @@
 (ns ^:no-doc select-nrepl.rewrite-clj.node.string
   (:require [select-nrepl.rewrite-clj.node.protocols :as node]
-            [clojure.tools.reader.edn :as edn]
+            [select-nrepl.clojure.tools.reader.edn :as edn]
             [clojure.string :as string]))
 
 ;; ## Node

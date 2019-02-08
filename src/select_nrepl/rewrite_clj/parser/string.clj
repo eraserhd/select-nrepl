@@ -2,7 +2,7 @@
   (:require [select-nrepl.rewrite-clj.parser
              [utils :as u]]
             [select-nrepl.rewrite-clj.node :as node]
-            [clojure.tools.reader
+            [select-nrepl.clojure.tools.reader
              [edn :as edn]
              [reader-types :as r]]
             [clojure.string :as string]))

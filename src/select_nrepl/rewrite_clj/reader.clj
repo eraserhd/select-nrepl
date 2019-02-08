@@ -1,6 +1,6 @@
 (ns ^:no-doc select-nrepl.rewrite-clj.reader
   (:refer-clojure :exclude [peek next])
-  (:require [clojure.tools.reader
+  (:require [select-nrepl.clojure.tools.reader
              [edn :as edn]
              [reader-types :as r]]
             [clojure.java.io :as io])
@@ -166,14 +166,14 @@
 
 (defn string-reader
   "Create reader for strings."
-  ^clojure.tools.reader.reader_types.IndexingPushbackReader
+  ^select_nrepl.clojure.tools.reader.reader_types.IndexingPushbackReader
   [s]
   (r/indexing-push-back-reader
     (r/string-push-back-reader s)))
 
 (defn file-reader
   "Create reader for files."
-  ^clojure.tools.reader.reader_types.IndexingPushbackReader
+  ^select_nrepl.clojure.tools.reader.reader_types.IndexingPushbackReader
   [f]
   (-> (io/file f)
       (io/reader)

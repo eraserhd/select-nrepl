@@ -1,5 +1,5 @@
 (ns ^:no-doc select-nrepl.rewrite-clj.parser.utils
-  (:require [clojure.tools.reader.reader-types :as r]))
+  (:require [select-nrepl.clojure.tools.reader.reader-types :as r]))
 
 (defn whitespace?
   "Check if a given character is a whitespace."

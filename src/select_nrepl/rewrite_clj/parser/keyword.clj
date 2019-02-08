@@ -1,7 +1,7 @@
 (ns ^:no-doc select-nrepl.rewrite-clj.parser.keyword
   (:require [select-nrepl.rewrite-clj.node :as node]
             [select-nrepl.rewrite-clj.parser.utils :as u]
-            [clojure.tools.reader
+            [select-nrepl.clojure.tools.reader
              [edn :as edn]
              [reader-types :as r]]))
 

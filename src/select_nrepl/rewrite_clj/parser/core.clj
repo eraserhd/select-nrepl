@@ -7,7 +7,7 @@
              [string :refer [parse-string parse-regex]]
              [token :refer [parse-token]]
              [whitespace :refer [parse-whitespace]]]
-            [clojure.tools.reader.reader-types :as r]))
+            [select-nrepl.clojure.tools.reader.reader-types :as r]))
 
 ;; ## Base Parser
 
