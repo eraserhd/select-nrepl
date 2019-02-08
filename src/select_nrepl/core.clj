@@ -106,69 +106,19 @@
         [ei ej] (end-position z)]
     [[si (+ sj start-offset)] [ei (- ej end-offset)]]))
 
-(defmulti extent
-  "Find the extend of the node at z, accounting for the node type
-  and whether we want an \"inside\" or \"whole\" extent."
-  (fn [message z]
-    [(or (:extent message) "whole") (when z (z/tag z))]))
-
-(defmethod extent :default
-  [_ z]
-  [(start-position z) (end-position z)])
-
-(defmethod extent ["whole" nil]
-  [_ _]
-  nil)
-
-(defmethod extent ["inside" :list]
-  [message z]
-  (shrink z 1 1))
-
-(defmethod extent ["inside" :namespaced-map]
-  [message z]
-  (extent message (-> z z/down z/right)))
-
-(defmethod extent ["inside" :map]
-  [message z]
-  (shrink z 1 1))
-
-(defmethod extent ["inside" :multi-line]
-  [message z]
-  (shrink z 1 1))
-
-(defmethod extent ["inside" :reader-macro]
-  [message z]
-  (extent message (-> z z/down z/right)))
-
-(defmethod extent ["inside" :regex]
-  [_ z]
-  (shrink z 2 1))
-
-(defmethod extent ["inside" :set]
-  [message z]
-  (shrink z 2 1))
-
-(defmethod extent ["inside" :syntax-quote]
-  [message z]
-  (extent message (-> z z/down)))
-
-(defmethod extent ["inside" :token]
-  [_ z]
-  (if (string? (z/value z))
-    (shrink z 1 1)
-    [(start-position z) (end-position z)]))
-
-(defmethod extent ["inside" :unquote]
-  [message z]
-  (extent message (-> z z/down)))
-
-(defmethod extent ["inside" :unquote-splicing]
-  [message z]
-  (extent message (-> z z/down)))
-
-(defmethod extent ["inside" :vector]
-  [_ z]
-  (shrink z 1 1))
+(defn- extent [message z]
+  (when z
+    (if (= "inside" (:extent message))
+      (case (z/tag z)
+        (:list :map :multi-line :vector)           (shrink z 1 1)
+        (:regex :set)                              (shrink z 2 1)
+        (:namespaced-map :reader-macro)            (recur message (-> z z/down z/right))
+        (:syntax-quote :unquote :unquote-splicing) (recur message (-> z z/down))
+        (:token)                                   (if (string? (z/value z))
+                                                     (shrink z 1 1)
+                                                     [(start-position z) (end-position z)])
+        #_otherwise                                [(start-position z) (end-position z)])
+      [(start-position z) (end-position z)])))
 
 (defn- response-for-select
   [message]
