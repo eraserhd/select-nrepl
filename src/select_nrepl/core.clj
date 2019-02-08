@@ -27,11 +27,7 @@
     (:token :regex :multi-line) true
     false))
 
-(defn- form?
-  [z]
-  (case (z/tag z)
-    (:list :vector :map :set) true
-    false))
+(def ^:private form? (comp #{:list :map :set :vector} z/tag))
 
 (defn- inside?
   [z cursor]
