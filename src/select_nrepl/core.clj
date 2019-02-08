@@ -106,18 +106,21 @@
         [ei ej] (end-position z)]
     [[si (+ sj start-offset)] [ei (- ej end-offset)]]))
 
+(defn- inside-extent [z]
+  (case (z/tag z)
+    (:list :map :multi-line :vector)           (shrink z 1 1)
+    (:regex :set)                              (shrink z 2 1)
+    (:namespaced-map :reader-macro)            (recur (-> z z/down z/right))
+    (:syntax-quote :unquote :unquote-splicing) (recur (-> z z/down))
+    (:token)                                   (if (string? (z/value z))
+                                                 (shrink z 1 1)
+                                                 [(start-position z) (end-position z)])
+    #_otherwise                                [(start-position z) (end-position z)]))
+
 (defn- extent [message z]
   (when z
     (if (= "inside" (:extent message))
-      (case (z/tag z)
-        (:list :map :multi-line :vector)           (shrink z 1 1)
-        (:regex :set)                              (shrink z 2 1)
-        (:namespaced-map :reader-macro)            (recur message (-> z z/down z/right))
-        (:syntax-quote :unquote :unquote-splicing) (recur message (-> z z/down))
-        (:token)                                   (if (string? (z/value z))
-                                                     (shrink z 1 1)
-                                                     [(start-position z) (end-position z)])
-        #_otherwise                                [(start-position z) (end-position z)])
+      (inside-extent z)
       [(start-position z) (end-position z)])))
 
 (defn- response-for-select
