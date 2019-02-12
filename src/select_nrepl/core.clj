@@ -22,10 +22,12 @@
 
 (defn- element?
   [z]
-  (case (z/tag z)
-    :reader-macro               (= :token (-> z z/down z/right z/tag))
-    (:token :regex :multi-line) true
-    false))
+  (and (not (some-> z z/up z/tag #{:meta :meta* :reader-macro}))
+       (loop [z z]
+         (case (z/tag z)
+           (:meta :meta* :reader-macro) (some-> z z/down z/right recur)
+           (:token :regex :multi-line)  true
+           false))))
 
 (def ^:private form? (comp #{:list :map :set :vector} z/tag))
 
@@ -67,8 +69,7 @@
   [{:keys [code cursor-line cursor-column]}]
   (let [start [cursor-line cursor-column]]
     (-> (z/of-string code {:track-position? true})
-        (find-object start element?)
-        (add-embellishments #{:meta :meta* :reader-macro}))))
+        (find-object start element?))))
 
 (defmethod select "form"
   [{:keys [code cursor-line cursor-column]}]
