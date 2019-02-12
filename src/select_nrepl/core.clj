@@ -45,21 +45,15 @@
   (and (position<=? (start-position z) cursor)
        (position<=? cursor (end-position z))))
 
-(defn- find-inside [z cursor ok?]
-  (find-it z #(inside? % cursor) ok?))
-
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
   [z cursor]
   (position<=? cursor (end-position z)))
 
-(defn- find-acceptable [z cursor ok?]
-  (find-it z #(acceptable? % cursor) ok?))
-
 (defn- find-object [z cursor ok?]
-  (or (find-inside z cursor ok?)
-      (find-acceptable z cursor ok?)))
+  (or (find-it z #(inside? % cursor) ok?)
+      (find-it z #(acceptable? % cursor) ok?)))
 
 (defn- add-embellishments [z embellishments]
   (loop [z z]
