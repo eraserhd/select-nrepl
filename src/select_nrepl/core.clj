@@ -29,21 +29,24 @@
 
 (def ^:private form? (comp #{:list :map :set :vector} z/tag))
 
+(defn- find-it [z f ok?]
+  (loop [z z]
+    (cond
+      (nil? z) nil
+      (f z)    (if-let [z' (some-> z z/down (find-it f ok?))]
+                 z'
+                 (if (ok? z)
+                   z
+                   (recur (z/right z))))
+      :else    (recur (z/right z)))))
+
 (defn- inside?
   [z cursor]
   (and (position<=? (start-position z) cursor)
        (position<=? cursor (end-position z))))
 
 (defn- find-inside [z cursor ok?]
-  (loop [z z]
-    (cond
-      (nil? z)           nil
-      (inside? z cursor) (if-let [z' (some-> z z/down (find-inside cursor ok?))]
-                           z'
-                           (if (ok? z)
-                             z
-                             (recur (z/right z))))
-      :else              (recur (z/right z)))))
+  (find-it z #(inside? % cursor) ok?))
 
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
@@ -52,15 +55,7 @@
   (position<=? cursor (end-position z)))
 
 (defn- find-acceptable [z cursor ok?]
-  (loop [z z]
-    (cond
-      (nil? z)               nil
-      (acceptable? z cursor) (if-let [z' (some-> z z/down (find-acceptable cursor ok?))]
-                               z'
-                               (if (ok? z)
-                                 z
-                                 (recur (z/right z))))
-      :else                  (recur (z/right z)))))
+  (find-it z #(acceptable? % cursor) ok?))
 
 (defn- find-object [z cursor ok?]
   (or (find-inside z cursor ok?)
