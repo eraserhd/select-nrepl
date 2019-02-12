@@ -135,7 +135,7 @@
                            :cursor-line si
                            :cursor-column sj
                            :anchor-line ei
-                           :selection-end-column ej})
+                           :anchor-column ej})
     (response-for message {:status :done})))
 
 (defn wrap-select
@@ -158,9 +158,9 @@
      :optional
      {"extent" "\"whole\" for the whole object, or \"inside\" for its insides."
       "anchor-line" "The ones-based ending line of the last character of the selection."
-      "selection-end-column" "The ones-based ending column of the last character of the selection."}
+      "anchor-column" "The ones-based ending column of the last character of the selection."}
      :returns
      {"cursor-line" "The ones-based starting line of the found object."
       "cursor-column" "The ones-based starting column of the found object."
       "anchor-line" "The ones-based line of the last character of the object."
-      "selection-end-column" "The ones-based column of the last character of the object."}}}})
+      "anchor-column" "The ones-based column of the last character of the object."}}}})
