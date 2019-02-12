@@ -71,13 +71,13 @@
                               :extent extent
                               :kind kind
                               :code text
-                              :selection-start-line (first start)
+                              :cursor-line (first start)
                               :selection-start-column (second start)
                               :selection-end-line (first end)
                               :selection-end-column (second end)})
             result (transduce (until-status "done") merge {} msg-seq)]
         (compose-output text
-                        [(:selection-start-line result) (:selection-start-column result)]
+                        [(:cursor-line result) (:selection-start-column result)]
                         [(:selection-end-line result) (:selection-end-column result)]))
       (finally
         (nrepl.server/stop-server server)))))
