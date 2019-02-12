@@ -128,14 +128,14 @@
 
 (defn- response-for-select
   [message]
-  (if-let [[[si sj] [ei ej]] (try (selection-extent message (select message))
+  (if-let [[[ci cj] [ai aj]] (try (selection-extent message (select message))
                                   (catch Throwable t
                                     nil))]
     (response-for message {:status :done
-                           :cursor-line si
-                           :cursor-column sj
-                           :anchor-line ei
-                           :anchor-column ej})
+                           :cursor-line ci
+                           :cursor-column cj
+                           :anchor-line ai
+                           :anchor-column aj})
     (response-for message {:status :done})))
 
 (defn wrap-select
