@@ -41,17 +41,6 @@
            (:list :map :set :vector)                         true
            false))))
 
-(defn- find-it [z f ok?]
-  (loop [z z]
-    (cond
-      (nil? z) nil
-      (f z)    (if-let [z' (some-> z z/down (find-it f ok?))]
-                 z'
-                 (if (ok? z)
-                   z
-                   (recur (z/right z))))
-      :else    (recur (z/right z)))))
-
 (defn- inside?
   [z cursor]
   (and (position<=? (start-position z) cursor)
@@ -63,9 +52,27 @@
   [z cursor]
   (position<=? cursor (end-position z)))
 
+(defn- bottom [z]
+  (loop [z z]
+    (if-let [z' (z/down z)]
+      (recur z')
+      z)))
+
+(defn- depth-first-next [z]
+  (if-let [z' (z/right z)]
+    (bottom z')
+    (z/up z)))
+
+(defn- traverse [z]
+  (->> (iterate depth-first-next (bottom z))
+       (take-while some?)))
+
 (defn- find-object [z cursor ok?]
-  (or (find-it z #(inside? % cursor) ok?)
-      (find-it z #(acceptable? % cursor) ok?)))
+  (let [all (->> (traverse z)
+                 (filter ok?)
+                 (filter #(acceptable? % cursor)))]
+    (or (first (filter #(inside? % cursor) all))
+        (first all))))
 
 (defmulti select :kind)
 
