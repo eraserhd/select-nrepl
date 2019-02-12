@@ -75,15 +75,15 @@
 (defmulti select :kind)
 
 (defmethod select "element"
-  [{:keys [code cursor-line selection-start-column]}]
-  (let [start [cursor-line selection-start-column]]
+  [{:keys [code cursor-line cursor-column]}]
+  (let [start [cursor-line cursor-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start element?)
         (add-embellishments #{:meta :meta* :reader-macro}))))
 
 (defmethod select "form"
-  [{:keys [code cursor-line selection-start-column]}]
-  (let [start [cursor-line selection-start-column]]
+  [{:keys [code cursor-line cursor-column]}]
+  (let [start [cursor-line cursor-column]]
     (-> (z/of-string code {:track-position? true})
         (find-object start form?)
         (add-embellishments #{:namespaced-map :meta :meta* :reader-macro
@@ -91,8 +91,8 @@
                               :quote}))))
 
 (defmethod select "toplevel"
-  [{:keys [code cursor-line selection-start-column]}]
-  (let [start [cursor-line selection-start-column]]
+  [{:keys [code cursor-line cursor-column]}]
+  (let [start [cursor-line cursor-column]]
     (-> (z/of-string code {:track-position? true})
         (z/find-depth-first (fn [z]
                               (and (acceptable? z start)
@@ -133,7 +133,7 @@
                                     nil))]
     (response-for message {:status :done
                            :cursor-line si
-                           :selection-start-column sj
+                           :cursor-column sj
                            :selection-end-line ei
                            :selection-end-column ej})
     (response-for message {:status :done})))
@@ -154,13 +154,13 @@
      {"code" "The entire source of the file."
       "kind" "The kind of object (i.e. \"element\")"
       "cursor-line" "The current ones-based selection start/cursor line."
-      "selection-start-column" "The current ones-based selection start/cursor column."}
+      "cursor-column" "The current ones-based selection start/cursor column."}
      :optional
      {"extent" "\"whole\" for the whole object, or \"inside\" for its insides."
       "selection-end-line" "The ones-based ending line of the last character of the selection."
       "selection-end-column" "The ones-based ending column of the last character of the selection."}
      :returns
      {"cursor-line" "The ones-based starting line of the found object."
-      "selection-start-column" "The ones-based starting column of the found object."
+      "cursor-column" "The ones-based starting column of the found object."
       "selection-end-line" "The ones-based line of the last character of the object."
       "selection-end-column" "The ones-based column of the last character of the object."}}}})
