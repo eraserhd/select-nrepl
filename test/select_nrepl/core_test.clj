@@ -64,6 +64,14 @@
 
     "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"
     "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>")
+
+  (fact "repetition selects the next-wider form"
+    (tabular
+      (select "whole" "form" ?input) => ?output
+      ?input                ?output
+      "( (he <(wo)> th) x)" "( <(he (wo) th)> x)"
+      "( <(he (wo) th)> x)" "<( (he (wo) th) x)>"))
+
   (tabular
     (select "inside" "form" ?input) => ?output
     ?input                ?output
