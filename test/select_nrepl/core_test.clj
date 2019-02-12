@@ -7,7 +7,6 @@
   (tabular
     (select "whole" "element" ?input) => ?output
     ?input             ?output
-    "<hello>"          "<hello>"
     "  hello/<>world"  "  <hello/world>"
     " :foo/ba<>r"      " <:foo/bar>"
     " \\new<>line"     " <\\newline>"
@@ -24,6 +23,19 @@
     "<> h ello"        " <h> ello"
     "h <> (ello t)"    "h  (<ello> t)"
     "h <> ([ello t])"  "h  ([<ello> t])")
+
+  (fact "repetition selects successive elements"
+    (tabular
+      (select "whole" "element" ?input) => ?output
+      ?input             ?output
+      "<foo> -42 :baz"   "foo <-42> :baz"
+      "foo <-42> :baz"   "foo -42 <:baz>"
+
+      "<foo> (-42) :baz" "foo (<-42>) :baz"
+      "foo (<-42>) :baz" "foo (-42) <:baz>"
+
+      "<foo> (-42 :baz)" "foo (<-42> :baz)"
+      "foo (<-42> :baz)" "foo (-42 <:baz>)"))
 
   (tabular
     (select "inside" "element" ?input) => ?output

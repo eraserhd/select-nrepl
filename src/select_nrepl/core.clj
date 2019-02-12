@@ -42,15 +42,19 @@
            false))))
 
 (defn- inside?
-  [z cursor]
+  [z cursor anchor]
   (and (position<=? (start-position z) cursor)
-       (position<=? cursor (end-position z))))
+       (position<=? cursor (end-position z))
+       (not= (sort [cursor anchor])
+             (sort [(start-position z) (end-position z)]))))
 
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
-  [z cursor]
-  (position<=? cursor (end-position z)))
+  [z cursor anchor]
+  (and (position<=? cursor (end-position z))
+       (not= (sort [cursor anchor])
+             (sort [(start-position z) (end-position z)]))))
 
 (defn- bottom [z]
   (loop [z z]
@@ -67,34 +71,31 @@
   (->> (iterate depth-first-next (bottom z))
        (take-while some?)))
 
-(defn- find-object [z cursor ok?]
+(defn- find-object [z cursor anchor ok?]
   (let [all (->> (traverse z)
                  (filter ok?)
-                 (filter #(acceptable? % cursor)))]
-    (or (first (filter #(inside? % cursor) all))
+                 (filter #(acceptable? % cursor anchor)))]
+    (or (first (filter #(inside? % cursor anchor) all))
         (first all))))
 
 (defmulti select :kind)
 
 (defmethod select "element"
-  [{:keys [code cursor-line cursor-column]}]
-  (let [start [cursor-line cursor-column]]
-    (-> (z/of-string code {:track-position? true})
-        (find-object start element?))))
+  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
+  (-> (z/of-string code {:track-position? true})
+      (find-object [cursor-line cursor-column] [anchor-line anchor-column] element?)))
 
 (defmethod select "form"
-  [{:keys [code cursor-line cursor-column]}]
-  (let [start [cursor-line cursor-column]]
-    (-> (z/of-string code {:track-position? true})
-        (find-object start form?))))
+  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
+  (-> (z/of-string code {:track-position? true})
+      (find-object [cursor-line cursor-column] [anchor-line anchor-column] form?)))
 
 (defmethod select "toplevel"
-  [{:keys [code cursor-line cursor-column]}]
-  (let [start [cursor-line cursor-column]]
-    (-> (z/of-string code {:track-position? true})
-        (z/find-depth-first (fn [z]
-                              (and (acceptable? z start)
-                                   (form? z)))))))
+  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
+  (-> (z/of-string code {:track-position? true})
+      (z/find-depth-first (fn [z]
+                            (and (acceptable? z [cursor-line cursor-column] [anchor-line anchor-column])
+                                 (form? z))))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)

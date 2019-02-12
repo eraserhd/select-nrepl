@@ -10,7 +10,9 @@
     (fn [state ch]
       (case ch
         \<       (assoc state :start (:position state))
-        \>       (assoc state :end (:position state))
+        \>       (-> state
+                     (assoc :end (:position state))
+                     (update-in [:end 1] dec))
         \newline (-> state
                      (update :position (fn [[i j]] [(inc i) 0]))
                      (update :text str ch))
