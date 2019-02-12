@@ -29,7 +29,17 @@
            (:token :regex :multi-line)  true
            false))))
 
-(def ^:private form? (comp #{:list :map :set :vector} z/tag))
+(defn- form?
+  [z]
+  (and (not (some-> z z/up z/tag #{:namespaced-map :meta :meta* :reader-macro
+                                   :syntax-quote :unquote :unquote-splicing
+                                   :quote}))
+       (loop [z z]
+         (case (z/tag z)
+           (:namespaced-map :meta :meta* :reader-macro)      (some-> z z/down z/right recur)
+           (:syntax-quote :unquote :unquote-splicing :quote) (some-> z z/down recur)
+           (:list :map :set :vector)                         true
+           false))))
 
 (defn- find-it [z f ok?]
   (loop [z z]
@@ -57,12 +67,6 @@
   (or (find-it z #(inside? % cursor) ok?)
       (find-it z #(acceptable? % cursor) ok?)))
 
-(defn- add-embellishments [z embellishments]
-  (loop [z z]
-    (if (some-> z z/up z/tag embellishments)
-      (recur (z/up z))
-      z)))
-
 (defmulti select :kind)
 
 (defmethod select "element"
@@ -75,10 +79,7 @@
   [{:keys [code cursor-line cursor-column]}]
   (let [start [cursor-line cursor-column]]
     (-> (z/of-string code {:track-position? true})
-        (find-object start form?)
-        (add-embellishments #{:namespaced-map :meta :meta* :reader-macro
-                              :syntax-quote :unquote :unquote-splicing
-                              :quote}))))
+        (find-object start form?))))
 
 (defmethod select "toplevel"
   [{:keys [code cursor-line cursor-column]}]
@@ -86,10 +87,7 @@
     (-> (z/of-string code {:track-position? true})
         (z/find-depth-first (fn [z]
                               (and (acceptable? z start)
-                                   (form? z))))
-        (add-embellishments #{:namespaced-map :meta :meta* :reader-macro
-                              :syntax-quote :unquote :unquote-splicing
-                              :quote}))))
+                                   (form? z)))))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
