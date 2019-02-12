@@ -134,7 +134,7 @@
     (response-for message {:status :done
                            :cursor-line si
                            :cursor-column sj
-                           :selection-end-line ei
+                           :anchor-line ei
                            :selection-end-column ej})
     (response-for message {:status :done})))
 
@@ -157,10 +157,10 @@
       "cursor-column" "The current ones-based selection start/cursor column."}
      :optional
      {"extent" "\"whole\" for the whole object, or \"inside\" for its insides."
-      "selection-end-line" "The ones-based ending line of the last character of the selection."
+      "anchor-line" "The ones-based ending line of the last character of the selection."
       "selection-end-column" "The ones-based ending column of the last character of the selection."}
      :returns
      {"cursor-line" "The ones-based starting line of the found object."
       "cursor-column" "The ones-based starting column of the found object."
-      "selection-end-line" "The ones-based line of the last character of the object."
+      "anchor-line" "The ones-based line of the last character of the object."
       "selection-end-column" "The ones-based column of the last character of the object."}}}})

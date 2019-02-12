@@ -73,11 +73,11 @@
                               :code text
                               :cursor-line (first start)
                               :cursor-column (second start)
-                              :selection-end-line (first end)
+                              :anchor-line (first end)
                               :selection-end-column (second end)})
             result (transduce (until-status "done") merge {} msg-seq)]
         (compose-output text
                         [(:cursor-line result) (:cursor-column result)]
-                        [(:selection-end-line result) (:selection-end-column result)]))
+                        [(:anchor-line result) (:selection-end-column result)]))
       (finally
         (nrepl.server/stop-server server)))))
