@@ -41,6 +41,12 @@
            (:list :map :set :vector)                         true
            false))))
 
+(defn- toplevel?
+  [z]
+  (and (form? z)
+       (or (not (some-> z z/up))
+           (some-> z z/up z/tag #{:forms}))))
+
 (defn- inside?
   [z cursor anchor]
   (and (position<=? (start-position z) cursor)
@@ -79,24 +85,16 @@
     (or (first (filter #(inside? % cursor anchor) all))
         (first all))))
 
-(defmulti select :kind)
+(def ^:private object-predicates
+  {"element"  element?
+   "form"     form?
+   "toplevel" toplevel?})
 
-(defmethod select "element"
-  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
-  (-> (z/of-string code {:track-position? true})
-      (find-object [cursor-line cursor-column] [anchor-line anchor-column] element?)))
-
-(defmethod select "form"
-  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
-  (-> (z/of-string code {:track-position? true})
-      (find-object [cursor-line cursor-column] [anchor-line anchor-column] form?)))
-
-(defmethod select "toplevel"
-  [{:keys [code cursor-line cursor-column anchor-line anchor-column]}]
-  (-> (z/of-string code {:track-position? true})
-      (z/find-depth-first (fn [z]
-                            (and (acceptable? z [cursor-line cursor-column] [anchor-line anchor-column])
-                                 (form? z))))))
+(defn- select
+  [{:keys [kind code cursor-line cursor-column anchor-line anchor-column]}]
+  (let [ok? (get object-predicates kind)]
+    (-> (z/of-string code {:track-position? true})
+        (find-object [cursor-line cursor-column] [anchor-line anchor-column] ok?))))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
