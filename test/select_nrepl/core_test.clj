@@ -98,7 +98,7 @@
       "x (he (ll<>o wo) l)" "x (he (<llo wo>) l)"
       "x (h<>e (llo wo) l)" "x (<he (llo wo) l>)")))
 
-(facts "about selecting toplevel forms"
+(facts "about selecting whole toplevel forms"
   (fact "when inside a top-level, that top-level is selected"
     (tabular
       (select "whole" "toplevel" ?input) => ?output
@@ -106,4 +106,6 @@
       "x (he (ll<>o wo) l)" "x <(he (llo wo) l)>"
       "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
   (fact "when not inside a top-level, the following top-level is selected"
-    (select "whole" "toplevel" "x<> (he (llo wo) l)") => "x <(he (llo wo) l)>"))
+    (select "whole" "toplevel" "x<> (he (llo wo) l)") => "x <(he (llo wo) l)>")
+  (fact "when a top-level is already selected, the following is selected"
+    (select "whole" "toplevel" " <(foo () b)> (bar) x") => " (foo () b) <(bar)> x"))
