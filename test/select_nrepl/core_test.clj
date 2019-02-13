@@ -38,6 +38,16 @@
 
         "<foo> (-42 :baz)" "foo (<-42> :baz)"
         "foo (<-42> :baz)" "foo (-42 <:baz>)"))
+         
+    (fact "when a count is given, it acts as repeated selection"
+       (tabular
+        (select "whole" "element" ?input {:count ?c}) => ?output
+        ?input             ?c ?output
+        "f<>oo -42 :baz"   0  "<foo> -42 :baz"
+        "f<>oo -42 :baz"   1  "<foo> -42 :baz"
+        "f<>oo -42 :baz"   2  "foo <-42> :baz"
+        "f<>oo -42 :baz"   3  "foo -42 <:baz>"
+        "f<>oo -42 :baz"   4  "foo -42 :baz"))
 
     (fact "when the last whole element is already selected, it will select nothing"
       (select "whole" "element" "foo (-42 <:baz>)") => "foo (-42 :baz)"))

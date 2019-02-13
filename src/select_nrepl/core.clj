@@ -128,10 +128,9 @@
     (dissoc message :cursor-line :cursor-column :anchor-line :anchor-column)))
 
 (defn- response-for-select
-  [message]
-  (response-for message (try (-> message
-                                 select
-                                 update-selection-extent
+  [{:keys [count] :or {count 1}, :as message}]
+  (response-for message (try (-> (nth (iterate (comp update-selection-extent select) message)
+                                      (max 1 count))
                                  (select-keys [:cursor-line :cursor-column :anchor-line :anchor-column])
                                  (assoc :status :done))
                              (catch Throwable t
@@ -155,7 +154,8 @@
       "cursor-line" "The current ones-based selection start/cursor line."
       "cursor-column" "The current ones-based selection start/cursor column."}
      :optional
-     {"extent" "\"whole\" for the whole object, or \"inside\" for its insides."
+     {"count" "number of times to expand or repeat the selection."
+      "extent" "\"whole\" for the whole object, or \"inside\" for its insides."
       "anchor-line" "The ones-based ending line of the last character of the selection."
       "anchor-column" "The ones-based ending column of the last character of the selection."}
      :returns
