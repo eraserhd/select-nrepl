@@ -37,7 +37,10 @@
         "foo (<-42>) :baz" "foo (-42) <:baz>"
 
         "<foo> (-42 :baz)" "foo (<-42> :baz)"
-        "foo (<-42> :baz)" "foo (-42 <:baz>)")))
+        "foo (<-42> :baz)" "foo (-42 <:baz>)"))
+
+    (fact "when the last whole element is already selected, it will select nothing"
+      (select "whole" "element" "foo (-42 <:baz>)") => "foo (-42 :baz)"))
 
   (facts "about selecting the inside of an element"
     (tabular
@@ -94,9 +97,11 @@
       "x (h<>e (llo wo) l)" "x (<he (llo wo) l>)")))
 
 (facts "about selecting toplevel forms"
-  (tabular
-    (select "whole" "toplevel" ?input) => ?output
-    ?input                ?output
-    "x (he (ll<>o wo) l)" "x <(he (llo wo) l)>"
-    "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"
-    "x<> (he (llo wo) l)" "x <(he (llo wo) l)>"))
+  (fact "when inside a top-level, that top-level is selected"
+    (tabular
+      (select "whole" "toplevel" ?input) => ?output
+      ?input                ?output
+      "x (he (ll<>o wo) l)" "x <(he (llo wo) l)>"
+      "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
+  (fact "when not inside a top-level, the following top-level is selected"
+    (select "whole" "toplevel" "x<> (he (llo wo) l)") => "x <(he (llo wo) l)>"))
