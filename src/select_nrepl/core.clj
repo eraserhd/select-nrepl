@@ -90,10 +90,11 @@
    "toplevel" toplevel?})
 
 (defn- select
-  [{:keys [kind code cursor-line cursor-column anchor-line anchor-column]}]
-  (let [ok? (get object-predicates kind)]
-    (-> (z/of-string code {:track-position? true})
-        (find-object [cursor-line cursor-column] [anchor-line anchor-column] ok?))))
+  [{:keys [kind code cursor-line cursor-column anchor-line anchor-column] :as message}]
+  (let [ok? (get object-predicates kind)
+        z (-> (z/of-string code {:track-position? true})
+              (find-object [cursor-line cursor-column] [anchor-line anchor-column] ok?))]
+    (assoc message :z z)))
 
 (defn- shrink [z start-offset end-offset]
   (let [[si sj] (start-position z)
@@ -114,15 +115,15 @@
                                                  (outside-extent z))
     #_otherwise                                (outside-extent z)))
 
-(defn- selection-extent [message z]
-  (when z
+(defn- selection-extent [message]
+  (when-let [z (:z message)]
     (if (= "inside" (:extent message))
       (inside-extent z)
       (outside-extent z))))
 
 (defn- response-for-select
   [message]
-  (if-let [[[ci cj] [ai aj]] (try (selection-extent message (select message))
+  (if-let [[[ci cj] [ai aj]] (try (selection-extent (select message))
                                   (catch Throwable t
                                     nil))]
     (response-for message {:status :done
