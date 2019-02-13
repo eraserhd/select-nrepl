@@ -78,7 +78,9 @@
         (select "whole" "form" ?input) => ?output
         ?input                ?output
         "( (he <(wo)> th) x)" "( <(he (wo) th)> x)"
-        "( <(he (wo) th)> x)" "<( (he (wo) th) x)>")))
+        "( <(he (wo) th)> x)" "<( (he (wo) th) x)>"))
+    (fact "when a top-level form is already selected, it selects the following form"
+      (select "whole" "form" "  <(hello () world)> ()") => "  (hello () world) <()>"))
 
   (facts "about selecting inside forms"
     (tabular

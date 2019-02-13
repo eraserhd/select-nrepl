@@ -53,8 +53,9 @@
   cursor.  In other words, if it ends after the cursor (inclusive)."
   [z cursor anchor]
   (and (position<=? cursor (end-position z))
-       (not= (sort [cursor anchor])
-             (sort [(start-position z) (end-position z)]))))
+       (let [[start end] (sort [cursor anchor])]
+         (not (and (position<=? start (start-position z))
+                   (position<=? (end-position z) end))))))
 
 (defn- bottom [z]
   (loop [z z]
