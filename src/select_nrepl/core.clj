@@ -20,8 +20,7 @@
 (defn- position<=? [a b]
   (<= (compare a b) 0))
 
-(defn- element?
-  [z]
+(defn- element? [z]
   (and (not (some-> z z/up z/tag #{:meta :meta* :reader-macro}))
        (loop [z z]
          (case (z/tag z)
@@ -29,8 +28,7 @@
            (:token :regex :multi-line)  true
            false))))
 
-(defn- form?
-  [z]
+(defn- form? [z]
   (and (not (some-> z z/up z/tag #{:namespaced-map :meta :meta* :reader-macro
                                    :syntax-quote :unquote :unquote-splicing
                                    :quote}))
@@ -41,18 +39,19 @@
            (:list :map :set :vector)                         true
            false))))
 
-(defn- toplevel?
-  [z]
+(defn- toplevel? [z]
   (and (form? z)
        (or (not (some-> z z/up))
            (some-> z z/up z/tag #{:forms}))))
 
 (defn- inside?
+  "True if the selection is wholly inside, but not exactly, the node at z."
   [z cursor anchor]
-  (and (position<=? (start-position z) cursor)
-       (position<=? cursor (end-position z))
-       (not= (sort [cursor anchor])
-             (sort [(start-position z) (end-position z)]))))
+  (let [[selection-start selection-end] (sort [cursor anchor])]
+    (and (position<=? (start-position z) selection-start)
+         (position<=? selection-end (end-position z))
+         (or (not= selection-start (start-position z))
+             (not= selection-end (end-position z))))))
 
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
