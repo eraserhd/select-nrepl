@@ -115,23 +115,27 @@
                                                  (outside-extent z))
     #_otherwise                                (outside-extent z)))
 
-(defn- selection-extent [message]
-  (when-let [z (:z message)]
-    (if (= "inside" (:extent message))
-      (inside-extent z)
-      (outside-extent z))))
+(defn- update-selection-extent [message]
+  (if-let [z (:z message)]
+    (let [[[ci cj] [ai aj]] (if (= "inside" (:extent message))
+                              (inside-extent z)
+                              (outside-extent z))]
+      (assoc message
+             :cursor-line ci
+             :cursor-column cj
+             :anchor-line ai
+             :anchor-column aj))
+    (dissoc message :cursor-line :cursor-column :anchor-line :anchor-column)))
 
 (defn- response-for-select
   [message]
-  (if-let [[[ci cj] [ai aj]] (try (selection-extent (select message))
-                                  (catch Throwable t
-                                    nil))]
-    (response-for message {:status :done
-                           :cursor-line ci
-                           :cursor-column cj
-                           :anchor-line ai
-                           :anchor-column aj})
-    (response-for message {:status :done})))
+  (response-for message (try (-> message
+                                 select
+                                 update-selection-extent
+                                 (select-keys [:cursor-line :cursor-column :anchor-line :anchor-column])
+                                 (assoc :status :done))
+                             (catch Throwable t
+                                {:status :done}))))
 
 (defn wrap-select
   [f]
