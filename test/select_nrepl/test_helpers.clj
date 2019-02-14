@@ -9,10 +9,10 @@
   (reduce
     (fn [state ch]
       (case ch
-        \<       (assoc state :start (:position state))
+        \<       (assoc state :cursor (:position state))
         \>       (-> state
-                     (assoc :end (:position state))
-                     (update-in [:end 1] dec))
+                     (assoc :anchor (:position state))
+                     (update-in [:anchor 1] dec))
         \newline (-> state
                      (update :position (fn [[i j]] [(inc i) 0]))
                      (update :text str ch))
@@ -21,20 +21,20 @@
           (update :text str ch))))
     {:text ""
      :position [1 1]
-     :start nil
-     :end nil}
+     :cursor nil
+     :anchor nil}
     (seq text)))
 
 (defn- compose-output
-  [text start end]
+  [text cursor anchor]
   (:text (reduce
           (fn [state ch]
             (as-> state $
-              (cond-> $ (= start (:position $)) (update :text str \<))
+              (cond-> $ (= cursor (:position $)) (update :text str \<))
               (update $ :text str ch)
-              (cond-> $ (= end (:position $))   (update :text str \>))
+              (cond-> $ (= anchor (:position $)) (update :text str \>))
               (update-in $ [:position 1] inc)
-              (cond-> $ (= ch \newline)         (update :position (fn [[i j]] [(inc i) 1])))))
+              (cond-> $ (= ch \newline)          (update :position (fn [[i j]] [(inc i) 1])))))
           {:text ""
            :position [1 1]}
           (seq text))))
@@ -68,15 +68,15 @@
       (let [conn (nrepl/connect :port (:port server))
             client (nrepl/client conn 60000)
             session (nrepl/client-session client)
-            {:keys [text start end]} (parse-input input)
+            {:keys [text cursor anchor]} (parse-input input)
             msg-seq (session (merge {:op "select"
                                      :extent extent
                                      :kind kind
                                      :code text
-                                     :cursor-line (first start)
-                                     :cursor-column (second start)
-                                     :anchor-line (first end)
-                                     :anchor-column (second end)}
+                                     :cursor-line (first cursor)
+                                     :cursor-column (second cursor)
+                                     :anchor-line (first anchor)
+                                     :anchor-column (second anchor)}
                                     extra))
             result (transduce (until-status "done") merge {} msg-seq)]
         (compose-output text
