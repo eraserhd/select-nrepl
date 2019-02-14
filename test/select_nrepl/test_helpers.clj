@@ -10,7 +10,7 @@
     (fn [state ch]
       (case ch
         \|       (assoc state :cursor (:position state))
-        \>       (-> state
+        \_       (-> state
                      (assoc :anchor (:position state))
                      (update-in [:anchor 1] dec))
         \newline (-> state
