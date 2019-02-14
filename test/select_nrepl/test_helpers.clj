@@ -30,9 +30,9 @@
   (:text (reduce
           (fn [state ch]
             (as-> state $
-              (cond-> $ (= cursor (:position $)) (update :text str \<))
+              (cond-> $ (= cursor (:position $)) (update :text str \|))
               (update $ :text str ch)
-              (cond-> $ (= anchor (:position $)) (update :text str \>))
+              (cond-> $ (= anchor (:position $)) (update :text str \_))
               (update-in $ [:position 1] inc)
               (cond-> $ (= ch \newline)          (update :position (fn [[i j]] [(inc i) 1])))))
           {:text ""
