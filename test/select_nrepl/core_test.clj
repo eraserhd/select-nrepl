@@ -9,57 +9,57 @@
       (tabular
         (select "whole" "element" ?input) => ?output
         ?input             ?output
-        "  hello/<>world"  "  <hello/world>"
-        " :foo/ba<>r"      " <:foo/bar>"
-        " \\new<>line"     " <\\newline>"
-        " \"a s<t>ring\" " " <\"a string\"> "
-        " 4200<>0  x"      " <42000>  x"
-        "++ #\"<>x\" ;;-"  "++ <#\"x\"> ;;-"
-        " #fo<>o \"h\" "   " <#foo \"h\"> "
-        " \"h<>ello\nw\" " " <\"hello\nw\"> "
-        "a ^S foo<>b y"    "a <^S foob> y"
-        "a #^S foo<>b y"   "a <#^S foob> y"
+        "  hello/|>world"  "  <hello/world>"
+        " :foo/ba|>r"      " <:foo/bar>"
+        " \\new|>line"     " <\\newline>"
+        " \"a s|t>ring\" " " <\"a string\"> "
+        " 4200|>0  x"      " <42000>  x"
+        "++ #\"|>x\" ;;-"  "++ <#\"x\"> ;;-"
+        " #fo|>o \"h\" "   " <#foo \"h\"> "
+        " \"h|>ello\nw\" " " <\"hello\nw\"> "
+        "a ^S foo|>b y"    "a <^S foob> y"
+        "a #^S foo|>b y"   "a <#^S foob> y"
 
-        "( he<>llo there)" "( <hello> there)"
-        "h <>"             "h "
-        "<> h ello"        " <h> ello"
-        "h <> (ello t)"    "h  (<ello> t)"
-        "h <> ([ello t])"  "h  ([<ello> t])"))
+        "( he|>llo there)" "( <hello> there)"
+        "h |>"             "h "
+        "|> h ello"        " <h> ello"
+        "h |> (ello t)"    "h  (<ello> t)"
+        "h |> ([ello t])"  "h  ([<ello> t])"))
 
     (fact "when a whole element is already selected, it will select the next one"
       (tabular
         (select "whole" "element" ?input) => ?output
         ?input             ?output
-        "<foo> -42 :baz"   "foo <-42> :baz"
-        "foo <-42> :baz"   "foo -42 <:baz>"
+        "|foo> -42 :baz"   "foo <-42> :baz"
+        "foo |-42> :baz"   "foo -42 <:baz>"
 
-        "<foo> (-42) :baz" "foo (<-42>) :baz"
-        "foo (<-42>) :baz" "foo (-42) <:baz>"
+        "|foo> (-42) :baz" "foo (<-42>) :baz"
+        "foo (|-42>) :baz" "foo (-42) <:baz>"
 
-        "<foo> (-42 :baz)" "foo (<-42> :baz)"
-        "foo (<-42> :baz)" "foo (-42 <:baz>)"))
+        "|foo> (-42 :baz)" "foo (<-42> :baz)"
+        "foo (|-42> :baz)" "foo (-42 <:baz>)"))
          
     (fact "when a count is given, it acts as repeated selection"
        (tabular
         (select "whole" "element" ?input {:count ?c}) => ?output
         ?input             ?c ?output
-        "f<>oo -42 :baz"   0  "<foo> -42 :baz"
-        "f<>oo -42 :baz"   1  "<foo> -42 :baz"
-        "f<>oo -42 :baz"   2  "foo <-42> :baz"
-        "f<>oo -42 :baz"   3  "foo -42 <:baz>"
-        "f<>oo -42 :baz"   4  "foo -42 :baz"))
+        "f|>oo -42 :baz"   0  "<foo> -42 :baz"
+        "f|>oo -42 :baz"   1  "<foo> -42 :baz"
+        "f|>oo -42 :baz"   2  "foo <-42> :baz"
+        "f|>oo -42 :baz"   3  "foo -42 <:baz>"
+        "f|>oo -42 :baz"   4  "foo -42 :baz"))
 
     (fact "when the last whole element is already selected, it will select nothing"
-      (select "whole" "element" "foo (-42 <:baz>)") => "foo (-42 :baz)"))
+      (select "whole" "element" "foo (-42 |:baz>)") => "foo (-42 :baz)"))
 
   (facts "about selecting the inside of an element"
     (tabular
       (select "inside" "element" ?input) => ?output
       ?input ?output
-      " \"a s<t>ring\" "  " \"<a string>\" "
-      " #\"a <>regex\" x" " #\"<a regex>\" x"
-      " #fo<>o \"hi\" "   " #foo \"<hi>\" "
-      " \"he\nt<>here \"" " \"<he\nthere >\"")))
+      " \"a s|t>ring\" "  " \"<a string>\" "
+      " #\"a |>regex\" x" " #\"<a regex>\" x"
+      " #fo|>o \"hi\" "   " #foo \"<hi>\" "
+      " \"he\nt|>here \"" " \"<he\nthere >\"")))
 
 (facts "about selecting forms"
   (facts "about selecting whole forms"
@@ -67,55 +67,55 @@
       (tabular
         (select "whole" "form" ?input) => ?output
         ?input                ?output
-        "x (he<>l wo) 4"      "x <(hel wo)> 4"
-        "x [he<>l wo] 4"      "x <[hel wo]> 4"
-        "x {he<>l wo} 4"      "x <{hel wo}> 4"
-        "x #{he<>l wo} 4"     "x <#{hel wo}> 4"
-        "x #:foo{:b<>ar 4} 4" "x <#:foo{:bar 4}> 4"
-        "x `(foo ~b<>ar) 4"   "x <`(foo ~bar)> 4"
-        "x ~(foo ~b<>ar) 4"   "x <~(foo ~bar)> 4"
-        "x ~@(foo ~b<>ar) 4"  "x <~@(foo ~bar)> 4"
-        "x ^S {he<>l wo} 4"   "x <^S {hel wo}> 4"
-        "x #^S {he<>l wo} 4"  "x <#^S {hel wo}> 4"
-        "x '(he<>l wo) 4"     "x <'(hel wo)> 4"
-        "x #f/b (he<>l wo) 4" "x <#f/b (hel wo)> 4"
+        "x (he|>l wo) 4"      "x <(hel wo)> 4"
+        "x [he|>l wo] 4"      "x <[hel wo]> 4"
+        "x {he|>l wo} 4"      "x <{hel wo}> 4"
+        "x #{he|>l wo} 4"     "x <#{hel wo}> 4"
+        "x #:foo{:b|>ar 4} 4" "x <#:foo{:bar 4}> 4"
+        "x `(foo ~b|>ar) 4"   "x <`(foo ~bar)> 4"
+        "x ~(foo ~b|>ar) 4"   "x <~(foo ~bar)> 4"
+        "x ~@(foo ~b|>ar) 4"  "x <~@(foo ~bar)> 4"
+        "x ^S {he|>l wo} 4"   "x <^S {hel wo}> 4"
+        "x #^S {he|>l wo} 4"  "x <#^S {hel wo}> 4"
+        "x '(he|>l wo) 4"     "x <'(hel wo)> 4"
+        "x #f/b (he|>l wo) 4" "x <#f/b (hel wo)> 4"
 
-        "x (he (ll<>o wo) l)" "x (he <(llo wo)> l)"
-        "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
+        "x (he (ll|>o wo) l)" "x (he <(llo wo)> l)"
+        "x (h|>e (llo wo) l)" "x <(he (llo wo) l)>"))
 
     (fact "when a whole form is already selected, it selects the next-wider form"
       (tabular
         (select "whole" "form" ?input) => ?output
         ?input                ?output
-        "( (he <(wo)> th) x)" "( <(he (wo) th)> x)"
-        "( <(he (wo) th)> x)" "<( (he (wo) th) x)>"))
+        "( (he |(wo)> th) x)" "( <(he (wo) th)> x)"
+        "( |(he (wo) th)> x)" "<( (he (wo) th) x)>"))
     (fact "when a top-level form is already selected, it selects the following form"
-      (select "whole" "form" "  <(hello () world)> ()") => "  (hello () world) <()>"))
+      (select "whole" "form" "  |(hello () world)> ()") => "  (hello () world) <()>"))
 
   (facts "about selecting inside forms"
     (tabular
       (select "inside" "form" ?input) => ?output
       ?input                ?output
-      "x (he<>l wo) 4"      "x (<hel wo>) 4"
-      "x [he<>l wo] 4"      "x [<hel wo>] 4"
-      "x {he<>l wo} 4"      "x {<hel wo>} 4"
-      "x #{he<>l wo} 4"     "x #{<hel wo>} 4"
-      "x #:foo{:b<>ar 4} 4" "x #:foo{<:bar 4>} 4"
-      "x `(foo ~b<>ar) 4"   "x `(<foo ~bar>) 4"
-      "x ~(foo ~b<>ar) 4"   "x ~(<foo ~bar>) 4"
-      "x ~@(foo ~b<>ar) 4"  "x ~@(<foo ~bar>) 4"
+      "x (he|>l wo) 4"      "x (<hel wo>) 4"
+      "x [he|>l wo] 4"      "x [<hel wo>] 4"
+      "x {he|>l wo} 4"      "x {<hel wo>} 4"
+      "x #{he|>l wo} 4"     "x #{<hel wo>} 4"
+      "x #:foo{:b|>ar 4} 4" "x #:foo{<:bar 4>} 4"
+      "x `(foo ~b|>ar) 4"   "x `(<foo ~bar>) 4"
+      "x ~(foo ~b|>ar) 4"   "x ~(<foo ~bar>) 4"
+      "x ~@(foo ~b|>ar) 4"  "x ~@(<foo ~bar>) 4"
 
-      "x (he (ll<>o wo) l)" "x (he (<llo wo>) l)"
-      "x (h<>e (llo wo) l)" "x (<he (llo wo) l>)")))
+      "x (he (ll|>o wo) l)" "x (he (<llo wo>) l)"
+      "x (h|>e (llo wo) l)" "x (<he (llo wo) l>)")))
 
 (facts "about selecting whole toplevel forms"
   (fact "when inside a top-level, that top-level is selected"
     (tabular
       (select "whole" "toplevel" ?input) => ?output
       ?input                ?output
-      "x (he (ll<>o wo) l)" "x <(he (llo wo) l)>"
-      "x (h<>e (llo wo) l)" "x <(he (llo wo) l)>"))
+      "x (he (ll|>o wo) l)" "x <(he (llo wo) l)>"
+      "x (h|>e (llo wo) l)" "x <(he (llo wo) l)>"))
   (fact "when not inside a top-level, the following top-level is selected"
-    (select "whole" "toplevel" "x<> (he (llo wo) l)") => "x <(he (llo wo) l)>")
+    (select "whole" "toplevel" "x|> (he (llo wo) l)") => "x <(he (llo wo) l)>")
   (fact "when a top-level is already selected, the following is selected"
-    (select "whole" "toplevel" " <(foo () b)> (bar) x") => " (foo () b) <(bar)> x"))
+    (select "whole" "toplevel" " |(foo () b)> (bar) x") => " (foo () b) <(bar)> x"))

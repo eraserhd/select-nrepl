@@ -9,7 +9,7 @@
   (reduce
     (fn [state ch]
       (case ch
-        \<       (assoc state :cursor (:position state))
+        \|       (assoc state :cursor (:position state))
         \>       (-> state
                      (assoc :anchor (:position state))
                      (update-in [:anchor 1] dec))
