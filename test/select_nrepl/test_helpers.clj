@@ -1,5 +1,6 @@
 (ns select-nrepl.test-helpers
   (:require
+   [midje.sweet :refer :all]
    [select-nrepl.core]
    [nrepl.core :as nrepl]
    [nrepl.server]))
@@ -25,7 +26,7 @@
      :anchor nil}
     (seq text)))
 
-(defn- compose-output
+(defn- compose-output*bad
   [text cursor anchor]
   (:text (reduce
           (fn [state ch]
@@ -38,6 +39,34 @@
           {:text ""
            :position [1 1]}
           (seq text))))
+
+(defn- compose-output
+  [text cursor anchor]
+  (:text (reduce
+          (fn [state ch]
+            (as-> state $
+              (update $ :text str ch)
+              (update-in $ [:position 1] inc)
+              (cond-> $ (= cursor (:position $))                       (update :text str \|))
+              (cond-> $ (= anchor (:position $))                       (update :text str \_))
+              (cond-> $ (= ch \newline)                                (update :position (fn [[i j]] [(inc i) 0])))
+              (cond-> $ (and (= ch \newline) (= cursor (:position $))) (update :text str \|))
+              (cond-> $ (and (= ch \newline) (= anchor (:position $))) (update :text str \_))))
+          {:text (str (if (= [1 0] cursor) "|" "")
+                      (if (= [1 0] anchor) "_" ""))
+           :position [1 0]}
+          (seq text))))
+
+(facts "about compose-output"
+  (fact "columns are zero-based caret offset"
+    (compose-output "hello" [1 0] [1 1])   => "|h_ello"
+    (compose-output "hello" [1 1] [1 0])   => "_h|ello")
+  (fact "handles positions at bol"
+    (compose-output "he\nllo" [2 0] [2 1]) => "he\n|l_lo")
+  (fact "handles positions at eof"
+    (compose-output "he" [1 2] [1 2]) => "he|_")
+  (fact "zero-width selections are representable"
+    (compose-output "hello" [1 2] [1 2]) => "he|_llo"))
 
 (def ^:private handler
   (nrepl.server/default-handler select-nrepl.core/wrap-select))
@@ -79,7 +108,7 @@
                                      :anchor-column (second anchor)}
                                     extra))
             result (transduce (until-status "done") merge {} msg-seq)]
-        (compose-output text
+        (compose-output*bad text
                         [(:cursor-line result) (:cursor-column result)]
                         [(:anchor-line result) (:anchor-column result)]))
       (finally
