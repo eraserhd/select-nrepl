@@ -121,7 +121,10 @@
   (if-let [z (:z message)]
     (let [[[ai aj] [ci cj]] (if (= "inside" (:extent message))
                               (inside-extent z)
-                              (outside-extent z))]
+                              (outside-extent z))
+          [ai aj] (if (#{"to_end"} (:direction message))
+                    [(:cursor-line message) (:cursor-column message)]
+                    [ai aj])]
       (assoc message
              :cursor-line ci
              :cursor-column cj
@@ -158,6 +161,7 @@
      :optional
      {"count" "number of times to expand or repeat the selection."
       "extent" "\"whole\" for the whole object, or \"inside\" for its insides."
+      "direction" "\"to_begin\" or \"to_end\", the default is to select both ends."
       "anchor-line" "The ones-based ending line of the last character of the selection."
       "anchor-column" "The ones-based ending column of the last character of the selection."}
      :returns

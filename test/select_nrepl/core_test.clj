@@ -60,7 +60,11 @@
       " \"a s|t_ring\" "  " \"_a string|\" "
       " #\"a |_regex\" x" " #\"_a regex|\" x"
       " #fo|_o \"hi\" "   " #foo \"_hi|\" "
-      " \"he\nt|_here \"" " \"_he\nthere |\"")))
+      " \"he\nt|_here \"" " \"_he\nthere |\""))
+
+  (facts "about selecting to the end of an element"
+    (fact "it selects from the cursor to the end of the element"
+      (select "whole" "element" "x :fo|o_bar" {:direction "to_end"}) => "x :fo_obar|")))
 
 (facts "about selecting forms"
   (facts "about selecting whole forms"
