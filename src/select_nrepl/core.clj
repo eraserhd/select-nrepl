@@ -119,7 +119,7 @@
 
 (defn- update-selection-extent [message]
   (if-let [z (:z message)]
-    (let [[[ci cj] [ai aj]] (if (= "inside" (:extent message))
+    (let [[[ai aj] [ci cj]] (if (= "inside" (:extent message))
                               (inside-extent z)
                               (outside-extent z))]
       (assoc message
