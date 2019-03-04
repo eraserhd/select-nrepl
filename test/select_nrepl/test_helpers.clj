@@ -5,7 +5,7 @@
    [nrepl.core :as nrepl]
    [nrepl.server]))
 
-(defn- parse-input
+(defn- parse-input*bad
   [text]
   (reduce
     (fn [state ch]
@@ -25,6 +25,31 @@
      :cursor nil
      :anchor nil}
     (seq text)))
+
+(defn- parse-input
+  [text]
+  (reduce
+    (fn [state ch]
+      (case ch
+        \|       (assoc state :cursor (:position state))
+        \_       (assoc state :anchor (:position state))
+        \newline (-> state
+                     (update :position (fn [[i j]] [(inc i) 0]))
+                     (update :text str ch))
+        (-> state
+          (update-in [:position 1] inc)
+          (update :text str ch))))
+    {:text ""
+     :position [1 0]
+     :cursor nil
+     :anchor nil}
+    (seq text)))
+
+(facts "about parse-input"
+  (fact "columns are zero-based caret offset"
+    (parse-input "|h_ello") => (contains {:cursor [1 0], :anchor [1 1]})
+    (parse-input "|_hello") => (contains {:cursor [1 0], :anchor [1 0]})
+    (parse-input "h\n|e_llo") => (contains {:cursor [2 0], :anchor [2 1]})))
 
 (defn- compose-output*bad
   [text cursor anchor]
@@ -97,7 +122,7 @@
       (let [conn (nrepl/connect :port (:port server))
             client (nrepl/client conn 60000)
             session (nrepl/client-session client)
-            {:keys [text cursor anchor]} (parse-input input)
+            {:keys [text cursor anchor]} (parse-input*bad input)
             msg-seq (session (merge {:op "select"
                                      :extent extent
                                      :kind kind
