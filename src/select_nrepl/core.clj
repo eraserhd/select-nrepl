@@ -6,7 +6,9 @@
    [nrepl.misc :refer [response-for]]
    [nrepl.transport :as t]))
 
-(def ^:private start-position z/position)
+(defn- start-position [z]
+  (let [[i j] (z/position z)]
+    [i (dec j)]))
 
 (defn- end-position [z]
   (let [[i j] (start-position z)
@@ -14,7 +16,7 @@
         lines (count (filter #{\newline} (seq s)))
         columns (count (re-find #"[^\n]*$" s))]
     [(+ i lines) (if (zero? lines)
-                   (+ j columns -1)
+                   (+ j columns)
                    columns)]))
 
 (defn- position<=? [a b]

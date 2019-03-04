@@ -50,7 +50,8 @@
         "f|_oo -42 :baz"   4  "foo -42 :baz"))
 
     (fact "when the last whole element is already selected, it will select nothing"
-      (select "whole" "element" "foo (-42 |:baz_)") => "foo (-42 :baz)"))
+      (select "whole" "element" "foo (-42 |:baz_)") => "foo (-42 :baz)"
+      (select "whole" "element" "foo -42 |:baz_") => "foo -42 :baz"))
 
   (facts "about selecting the inside of an element"
     (tabular

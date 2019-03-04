@@ -5,27 +5,6 @@
    [nrepl.core :as nrepl]
    [nrepl.server]))
 
-(defn- parse-input*bad
-  [text]
-  (reduce
-    (fn [state ch]
-      (case ch
-        \|       (assoc state :cursor (:position state))
-        \_       (-> state
-                     (assoc :anchor (:position state))
-                     (update-in [:anchor 1] dec))
-        \newline (-> state
-                     (update :position (fn [[i j]] [(inc i) 0]))
-                     (update :text str ch))
-        (-> state
-          (update-in [:position 1] inc)
-          (update :text str ch))))
-    {:text ""
-     :position [1 1]
-     :cursor nil
-     :anchor nil}
-    (seq text)))
-
 (defn- parse-input
   [text]
   (reduce
@@ -50,20 +29,6 @@
     (parse-input "|h_ello") => (contains {:cursor [1 0], :anchor [1 1]})
     (parse-input "|_hello") => (contains {:cursor [1 0], :anchor [1 0]})
     (parse-input "h\n|e_llo") => (contains {:cursor [2 0], :anchor [2 1]})))
-
-(defn- compose-output*bad
-  [text cursor anchor]
-  (:text (reduce
-          (fn [state ch]
-            (as-> state $
-              (cond-> $ (= cursor (:position $)) (update :text str \|))
-              (update $ :text str ch)
-              (cond-> $ (= anchor (:position $)) (update :text str \_))
-              (update-in $ [:position 1] inc)
-              (cond-> $ (= ch \newline)          (update :position (fn [[i j]] [(inc i) 1])))))
-          {:text ""
-           :position [1 1]}
-          (seq text))))
 
 (defn- compose-output
   [text cursor anchor]
@@ -122,7 +87,7 @@
       (let [conn (nrepl/connect :port (:port server))
             client (nrepl/client conn 60000)
             session (nrepl/client-session client)
-            {:keys [text cursor anchor]} (parse-input*bad input)
+            {:keys [text cursor anchor]} (parse-input input)
             msg-seq (session (merge {:op "select"
                                      :extent extent
                                      :kind kind
@@ -133,7 +98,7 @@
                                      :anchor-column (second anchor)}
                                     extra))
             result (transduce (until-status "done") merge {} msg-seq)]
-        (compose-output*bad text
+        (compose-output text
                         [(:cursor-line result) (:cursor-column result)]
                         [(:anchor-line result) (:anchor-column result)]))
       (finally
