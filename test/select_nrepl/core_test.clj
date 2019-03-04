@@ -63,8 +63,11 @@
       " \"he\nt|_here \"" " \"_he\nthere |\""))
 
   (facts "about selecting to the end of an element"
-    (fact "it selects from the cursor to the end of the element"
-      (select "whole" "element" "x :fo|o_bar" {:direction "to_end"}) => "x :fo_obar|")))
+    (fact "it selects from the cursor"
+      (select "whole" "element" "x :fo|o_bar" {:direction "to_end"}) => "x :fo_obar|"))
+  (facts "about selecting to the beginning of an element"
+    (fact "it selects from the cursor"
+      (select "whole" "element" "x :fo|o_bar" {:direction "to_begin"}) => "x |:fo_obar")))
 
 (facts "about selecting forms"
   (facts "about selecting whole forms"

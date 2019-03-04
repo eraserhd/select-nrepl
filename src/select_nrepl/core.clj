@@ -122,7 +122,10 @@
     (let [[[ai aj] [ci cj]] (if (= "inside" (:extent message))
                               (inside-extent z)
                               (outside-extent z))
-          [ai aj] (if (#{"to_end"} (:direction message))
+          [[ai aj] [ci cj]] (if (= "to_begin" (:direction message))
+                              [[ci cj] [ai aj]]
+                              [[ai aj] [ci cj]])
+          [ai aj] (if (#{"to_begin" "to_end"} (:direction message))
                     [(:cursor-line message) (:cursor-column message)]
                     [ai aj])]
       (assoc message
