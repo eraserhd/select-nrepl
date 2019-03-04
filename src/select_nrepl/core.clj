@@ -127,6 +127,9 @@
                               [[ai aj] [ci cj]])
           [ai aj] (if (#{"to_begin" "to_end"} (:direction message))
                     [(:cursor-line message) (:cursor-column message)]
+                    [ai aj])
+          [ai aj] (if (= "extend" (:combine message))
+                    [(:anchor-line message) (:anchor-column message)]
                     [ai aj])]
       (assoc message
              :cursor-line ci
@@ -165,6 +168,7 @@
      {"count" "number of times to expand or repeat the selection."
       "extent" "\"whole\" for the whole object, or \"inside\" for its insides."
       "direction" "\"to_begin\" or \"to_end\", the default is to select both ends."
+      "combine" "How to combine with existing selection. \"replace\" (default) or \"extend\".",
       "anchor-line" "The ones-based ending line of the last character of the selection."
       "anchor-column" "The ones-based ending column of the last character of the selection."}
      :returns
