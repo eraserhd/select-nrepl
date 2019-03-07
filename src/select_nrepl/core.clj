@@ -46,8 +46,11 @@
 
 (defn- toplevel? [z]
   (and (form? z)
-       (or (not (some-> z z/up))
-           (some-> z z/up z/tag #{:forms}))))
+       (loop [z (z/up z)]
+          (cond
+            (nil? z)                      true
+            (#{:forms :uneval} (z/tag z)) (recur (z/up z))
+            :else                         false))))
 
 (defn- inside?
   "True if the selection is wholly inside, but not exactly, the node at z."
