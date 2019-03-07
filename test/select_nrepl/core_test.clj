@@ -67,7 +67,13 @@
       (select "whole" "element" "x :fo|o_bar" {:direction "to_end"}) => "x :fo_obar|")
     (fact "it selects from the anchor when extending"
       (select "whole" "element" "x :fo|o_bar" {:combine "extend", :direction "to_end"}) => "x :foo_bar|"
-      (select "whole" "element" "x :fo_o|bar" {:combine "extend", :direction "to_end"}) => "x :fo_obar|"))
+      (select "whole" "element" "x :fo_o|bar" {:combine "extend", :direction "to_end"}) => "x :fo_obar|")
+    (fact "it selects to the end of successive elements"
+      (tabular
+        (select "whole" "element" ?input {:direction "to_end"}) => ?output
+        ?input          ?output
+        "_a|bc def ghi" "a_bc| def ghi"
+        "a_bc| def ghi" "abc_ def| ghi")))
   (facts "about selecting to the beginning of an element"
     (fact "it selects from the cursor when replacing"
       (select "whole" "element" "x :fo|o_bar" {:direction "to_begin"}) => "x |:fo_obar")

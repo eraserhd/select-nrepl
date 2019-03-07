@@ -58,11 +58,14 @@
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
-  [z cursor anchor]
-  (and (position<=? cursor (end-position z))
-       (let [[start end] (sort [cursor anchor])]
-         (not (and (position<=? start (start-position z))
-                   (position<=? (end-position z) end))))))
+  [message z cursor anchor]
+  (case (:direction message)
+    "to_end" (and (position<=? cursor (end-position z))
+                  (not= cursor (end-position z)))
+    (and (position<=? cursor (end-position z))
+         (let [[start end] (sort [cursor anchor])]
+           (not (and (position<=? start (start-position z))
+                     (position<=? (end-position z) end)))))))
 
 (defn- bottom [z]
   (loop [z z]
@@ -82,7 +85,7 @@
 (defn- find-object [message z cursor anchor ok?]
   (let [all (->> (traverse z)
                  (filter ok?)
-                 (filter #(acceptable? % cursor anchor)))]
+                 (filter #(acceptable? message % cursor anchor)))]
     (or (first (filter #(inside? % cursor anchor) all))
         (first all))))
 
