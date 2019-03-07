@@ -63,11 +63,11 @@
   cursor.  In other words, if it ends after the cursor (inclusive)."
   [message z cursor anchor]
   (case (:direction message)
-    "to_end" (position<? cursor (end-position z))
-    (and (position<=? cursor (end-position z))
-         (let [[start end] (sort [cursor anchor])]
-           (not (and (position<=? start (start-position z))
-                     (position<=? (end-position z) end)))))))
+    "to_end"    (position<? cursor (end-position z))
+    #_otherwise (and (position<=? cursor (end-position z))
+                     (let [[start end] (sort [cursor anchor])]
+                       (not (and (position<=? start (start-position z))
+                                 (position<=? (end-position z) end)))))))
 
 (defn- bottom [z]
   (loop [z z]

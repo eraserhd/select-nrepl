@@ -73,7 +73,8 @@
         (select "whole" "element" ?input {:direction "to_end"}) => ?output
         ?input          ?output
         "_a|bc def ghi" "a_bc| def ghi"
-        "a_bc| def ghi" "abc_ def| ghi")))
+        "a_bc| def ghi" "abc_ def| ghi"
+        "abc_ def| ghi" "abc def_ ghi|")))
   (facts "about selecting to the beginning of an element"
     (fact "it selects from the cursor when replacing"
       (select "whole" "element" "x :fo|o_bar" {:direction "to_begin"}) => "x |:fo_obar")
