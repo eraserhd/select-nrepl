@@ -117,6 +117,14 @@
         ?input                ?output
         "( (he |(wo)_ th) x)" "( _(he (wo) th)| x)"
         "( |(he (wo) th)_ x)" "_( (he (wo) th) x)|"))
+    (fact "it selects to the end of successively bigger forms"
+      (tabular
+        (select "whole" "form" ?input {:direction "to_end"}) => ?output
+        ?input                    ?output
+        "(he (lo (w|o_r) xy) zz)" "(he (lo (w_or)| xy) zz)"
+        "(he (lo (w_or)| xy) zz)" "(he (lo (wor)_ xy)| zz)"
+        "(he (lo (wor)_ xy)| zz)" "(he (lo (wor) xy)_ zz)|"))
+       
     (fact "when a top-level form is already selected, it selects the following form"
       (select "whole" "form" "  |(hello () world)_ ()") => "  (hello () world) _()|"))
 
