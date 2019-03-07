@@ -86,7 +86,8 @@
         (select "whole" "element" ?input {:direction "to_begin"}) => ?output
         ?input          ?output
         "abc def g_hi|" "abc def |ghi_"
-        "abc def |ghi_" "abc |def _ghi"))))
+        "abc def |ghi_" "abc |def _ghi"
+        "abc |def _ghi" "|abc _def ghi"))))
 
 (facts "about selecting forms"
   (facts "about selecting whole forms"
