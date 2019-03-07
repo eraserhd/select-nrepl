@@ -64,10 +64,19 @@
   [message z cursor anchor]
   (case (:direction message)
     "to_end"    (position<? cursor (end-position z))
+    "to_begin"  (position<? (start-position z) cursor)
     #_otherwise (and (position<=? cursor (end-position z))
                      (let [[start end] (sort [cursor anchor])]
                        (not (and (position<=? start (start-position z))
                                  (position<=? (end-position z) end)))))))
+
+(defn- prefer-left
+  ([] nil)
+  ([a b] a))
+
+(defn- prefer-right
+  ([] nil)
+  ([a b] b))
 
 (defn- bottom [z]
   (loop [z z]
@@ -87,9 +96,15 @@
 (defn- find-object [message z cursor anchor ok?]
   (let [all (->> (traverse z)
                  (filter ok?)
-                 (filter #(acceptable? message % cursor anchor)))]
-    (or (first (filter #(inside? % cursor anchor) all))
-        (first all))))
+                 (filter #(acceptable? message % cursor anchor)))
+        prefer (if (= "to_begin" (:direction message))
+                 prefer-right
+                 prefer-left)]
+    (or (->> all
+             (filter #(inside? % cursor anchor))
+             (reduce prefer))
+        (->> all
+             (reduce prefer)))))
 
 (def ^:private object-predicates
   {"element"  element?

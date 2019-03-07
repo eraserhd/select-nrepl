@@ -80,7 +80,13 @@
       (select "whole" "element" "x :fo|o_bar" {:direction "to_begin"}) => "x |:fo_obar")
     (fact "it selects from the anchor when extending"
       (select "whole" "element" "x :fo|o_bar" {:combine "extend", :direction "to_begin"}) => "x |:foo_bar"
-      (select "whole" "element" "x :fo_o|bar" {:combine "extend", :direction "to_begin"}) => "x |:fo_obar")))
+      (select "whole" "element" "x :fo_o|bar" {:combine "extend", :direction "to_begin"}) => "x |:fo_obar")
+    (fact "it selects to the end of successive elements"
+      (tabular
+        (select "whole" "element" ?input {:direction "to_begin"}) => ?output
+        ?input          ?output
+        "abc def g_hi|" "abc def |ghi_"
+        "abc def |ghi_" "abc |def _ghi"))))
 
 (facts "about selecting forms"
   (facts "about selecting whole forms"
