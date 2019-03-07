@@ -19,6 +19,9 @@
                    (+ j columns)
                    columns)]))
 
+(defn- position<? [a b]
+  (< (compare a b) 0))
+
 (defn- position<=? [a b]
   (<= (compare a b) 0))
 
@@ -60,8 +63,7 @@
   cursor.  In other words, if it ends after the cursor (inclusive)."
   [message z cursor anchor]
   (case (:direction message)
-    "to_end" (and (position<=? cursor (end-position z))
-                  (not= cursor (end-position z)))
+    "to_end" (position<? cursor (end-position z))
     (and (position<=? cursor (end-position z))
          (let [[start end] (sort [cursor anchor])]
            (not (and (position<=? start (start-position z))
