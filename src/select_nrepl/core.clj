@@ -58,6 +58,13 @@
          (or (not= selection-start (start-position z))
              (not= selection-end (end-position z))))))
 
+(defn- selection-fully-contains?
+  "True iff node at z is fully contained in selection."
+  [cursor anchor z]
+  (let [[start end] (sort [cursor anchor])]
+    (and (position<=? start (start-position z))
+         (position<=? (end-position z) end))))
+
 (defn- acceptable?
   "A node is acceptable if it contains the cursor or starts after
   cursor.  In other words, if it ends after the cursor (inclusive)."
@@ -66,9 +73,7 @@
     "to_end"    (position<? cursor (end-position z))
     "to_begin"  (position<? (start-position z) cursor)
     #_otherwise (and (position<=? cursor (end-position z))
-                     (let [[start end] (sort [cursor anchor])]
-                       (not (and (position<=? start (start-position z))
-                                 (position<=? (end-position z) end)))))))
+                     (not (selection-fully-contains? cursor anchor z)))))
 
 (defn- prefer-left
   ([] nil)
