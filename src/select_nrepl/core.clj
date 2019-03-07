@@ -79,7 +79,7 @@
   (->> (iterate depth-first-next (bottom z))
        (take-while some?)))
 
-(defn- find-object [z cursor anchor ok?]
+(defn- find-object [message z cursor anchor ok?]
   (let [all (->> (traverse z)
                  (filter ok?)
                  (filter #(acceptable? % cursor anchor)))]
@@ -94,8 +94,11 @@
 (defn- select
   [{:keys [kind code cursor-line cursor-column anchor-line anchor-column] :as message}]
   (let [ok? (get object-predicates kind)
-        z (-> (z/of-string code {:track-position? true})
-              (find-object [cursor-line cursor-column] [anchor-line anchor-column] ok?))]
+        z (find-object message
+                       (z/of-string code {:track-position? true})
+                       [cursor-line cursor-column]
+                       [anchor-line anchor-column]
+                       ok?)]
     (assoc message :z z)))
 
 (defn- shrink [z start-offset end-offset]
