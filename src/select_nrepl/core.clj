@@ -192,18 +192,18 @@
     {:doc "Find an object"
      :requires
      {"code" "The entire source of the file."
-      "kind" "The kind of object (i.e. \"element\")"
+      "kind" "The kind of object (i.e. \"element\", \"form\", \"toplevel\")"
       "cursor-line" "The current ones-based selection start/cursor line."
-      "cursor-column" "The current ones-based selection start/cursor column."}
+      "cursor-column" "The current zero-based selection start/cursor column."}
      :optional
      {"count" "number of times to expand or repeat the selection."
       "extent" "\"whole\" for the whole object, or \"inside\" for its insides."
       "direction" "\"to_begin\" or \"to_end\", the default is to select both ends."
       "combine" "How to combine with existing selection. \"replace\" (default) or \"extend\".",
       "anchor-line" "The ones-based ending line of the last character of the selection."
-      "anchor-column" "The ones-based ending column of the last character of the selection."}
+      "anchor-column" "The zero-based ending column of the last character of the selection."}
      :returns
      {"cursor-line" "The ones-based starting line of the found object."
-      "cursor-column" "The ones-based starting column of the found object."
+      "cursor-column" "The zero-based starting column of the found object."
       "anchor-line" "The ones-based line of the last character of the object."
-      "anchor-column" "The ones-based column of the last character of the object."}}}})
+      "anchor-column" "The zero-based column of the last character of the object."}}}})

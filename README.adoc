@@ -4,7 +4,31 @@ Text-object support for your editor as nREPL middleware.
 
 == Usage
 
-FIXME
+Add the following to your `profiles.clj` (`cider-nrepl` isn't strictly
+necessary, but if you want this, you probably want that, too):
+
+.profiles.clj
+[source,clojure]
+----
+{:user {:plugins [[cider/cider-nrepl "0.21.0"]]
+        :dependencies [[net.eraserhead/select-nrepl "0.1.0"]]
+        :repl-options {:nrepl-middleware [select-nrepl.core/wrap-select]}}}
+----
+
+This will add the "select" op to nrepl.  See the operation's descriptor for
+more information.
+
+== Kakoune
+
+For intergrating with Kakoune, install https://github.com/eraserhd/rep[rep]
+and see https://github.com/eraserhd/dotfiles/blob/develop/kak/config/kak.symlink/kakrc#L292-L38[this example].
+
+== Note on Cursor Positions
+
+In order to support as many editors as possible, columns are __zero-based
+caret offsets__, meaning that they are not actually columns but specify the
+location of a caret in between columns.  Zero is before the first character
+on a line, and one is just after the first character.
 
 == License
 
