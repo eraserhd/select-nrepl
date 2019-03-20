@@ -2,7 +2,7 @@
 
 Text-object support for your editor as nREPL middleware. 
 
-== Usage
+== Installing
 
 Add the following to your `profiles.clj` (`cider-nrepl` isn't strictly
 necessary, but if you want this, you probably want that, too):
@@ -16,7 +16,18 @@ necessary, but if you want this, you probably want that, too):
 ----
 
 This will add the "select" op to nrepl.  See the operation's descriptor for
-more information.
+more information.  You will need some editor scripting to use this operation.
+
+== Demo
+
+.Selecting elements
+image::https://asciinema.org/a/235120.svg[link="https://asciinema.org/a/235120"]
+
+.Selecting forms
+image::https://asciinema.org/a/235116.svg[link="https://asciinema.org/a/235116"]
+
+.Selecting toplevels
+image::https://asciinema.org/a/235118.svg[link="https://asciinema.org/a/235118"]
 
 == Kakoune
 
