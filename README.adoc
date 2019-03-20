@@ -1,5 +1,7 @@
 = select-nrepl
 
+https://github.com/eraserhd/select-nrepl[]
+
 Text-object support for your editor as nREPL middleware. 
 
 == Installing
